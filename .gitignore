@@ -1,0 +1,10 @@
+node_modules/
+dist/
+dist-pages/
+.vite/
+*.local
+.npm-cache/
+.env
+.env.*
+!.env.example
+*.log
