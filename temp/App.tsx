@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useScrollMotion } from './useScrollMotion';
+import { ActivityCarousel } from './ActivityCarousel';
 
 const navItems = [
   ['Mạng lưới', '#mang-luoi'],
@@ -41,18 +42,21 @@ const activities = [
     title: 'Gặp gỡ những người cùng mối quan tâm',
     text: 'Khám phá các câu lạc bộ và hoạt động nghiên cứu của sinh viên ở nhiều trường.',
     mark: 'N',
+    details: ['Giới thiệu câu lạc bộ', 'Kết nối giữa các trường', 'Tìm điểm chung trong nghiên cứu'],
   },
   {
     tag: 'CHIA SẺ',
     title: 'Mở rộng cơ hội học hỏi và hợp tác',
     text: 'Cùng trao đổi kinh nghiệm, kết nối nguồn lực và đề xuất hoạt động chung.',
     mark: '↗',
+    details: ['Chia sẻ kinh nghiệm vận hành', 'Trao đổi phương pháp nghiên cứu', 'Đề xuất hoạt động liên CLB'],
   },
   {
     tag: 'THAM GIA',
     title: 'Theo dõi thông tin từ Mạng lưới',
     text: 'Cập nhật thông báo, chương trình và các sự kiện dành cho cộng đồng thành viên.',
     mark: '✳',
+    details: ['Theo dõi thông báo', 'Tìm hiểu chương trình học thuật', 'Cập nhật hướng dẫn tham gia'],
   },
 ];
 
@@ -139,7 +143,7 @@ export default function App() {
         <div className="hero-track" data-scene data-pinned>
         <section className="hero">
           <div className="hero-grain" />
-          <div className="hero-copy">
+          <div className="hero-copy" data-hero-panel="0">
             <p className="eyebrow"><span className="eyebrow-rule" /> MẠNG LƯỚI SINH VIÊN NGHIÊN CỨU KHOA HỌC</p>
             <h1><span className="hero-line"><span>Kết nối để</span></span><span className="hero-line"><em>nghiên cứu</em></span><span className="hero-line"><span>đi xa hơn.</span></span></h1>
             <p className="hero-desc">Một không gian chung để các câu lạc bộ sinh viên nghiên cứu khoa học gặp gỡ, chia sẻ và cùng tạo nên những giá trị mới.</p>
@@ -150,7 +154,9 @@ export default function App() {
             <div className="hero-footnote"><span className="footnote-mark">✳</span><span>Kết nối câu lạc bộ<br />Lan tỏa tinh thần nghiên cứu</span></div>
           </div>
           <NetworkArtwork />
-          <div className="hero-scene-copy"><span className="scene-label">TỪ MỘT KẾT NỐI</span><h2>Đến vô vàn<br /><em>khả năng.</em></h2><p>Mỗi câu lạc bộ là một điểm sáng.<br />Cùng nhau, ta tạo nên một mạng lưới.</p></div>
+          <div className="hero-scene-copy" data-hero-panel="1"><span className="scene-label">02 / CỘNG ĐỒNG CÙNG TIẾN</span><h2>Đến vô vàn<br /><em>khả năng.</em></h2><p>Mỗi câu lạc bộ là một điểm sáng. Khi kết nối, những trải nghiệm riêng trở thành nguồn cảm hứng chung.</p><ul className="hero-facts"><li><b>Kết nối liên trường</b><span>Gặp gỡ những CLB có chung mối quan tâm.</span></li><li><b>Chia sẻ để phát triển</b><span>Cùng trao đổi kinh nghiệm và cách làm nghiên cứu.</span></li></ul></div>
+          <div className="hero-scene-copy hero-scene-third" data-hero-panel="2"><span className="scene-label">03 / BẮT ĐẦU HÀNH TRÌNH</span><h2>Một hồ sơ.<br /><em>Một khởi đầu.</em></h2><p>Tìm hiểu Mạng lưới, chuẩn bị thông tin câu lạc bộ và theo dõi đợt tiếp nhận phù hợp.</p><ul className="hero-checklist"><li>Hồ sơ tổ chức và người đại diện</li><li>Minh chứng hoạt động nghiên cứu</li><li>Thẩm định và công nhận theo quy trình</li></ul><a className="button button-yellow" href="#tham-gia">Khám phá cách tham gia <Arrow diagonal /></a></div>
+          <div className="hero-chapters" aria-label="Ba chặng giới thiệu"><span className="hero-chapter chapter-0"><b>01</b>KẾT NỐI</span><span className="hero-chapter chapter-1"><b>02</b>CỘNG HƯỞNG</span><span className="hero-chapter chapter-2"><b>03</b>KHỞI ĐẦU</span></div>
           <div className="hero-index"><a href="#mang-luoi" className="scroll-cue"><span className="scroll-cue-line" />CUỘN ĐỂ KHÁM PHÁ ↓</a><span>SVNCKH / KẾT NỐI KHÔNG GIỚI HẠN</span></div>
         </section>
         </div>
@@ -181,6 +187,7 @@ export default function App() {
             <p className="eyebrow"><span className="eyebrow-rule" /> CỘNG ĐỒNG · TRI THỨC · TƯƠNG LAI</p>
             <p className="statement-line">{['Từ những ý tưởng', 'riêng lẻ đến một', 'cộng đồng cùng tiến.'].map((line, index) => <span className={`statement-fragment fragment-${index}`} key={line} style={{ '--line-index': index } as CSSProperties}>{line}</span>)}</p>
             <div className="statement-aside"><span className="statement-star">✳</span><p>Nơi hành trình nghiên cứu của mỗi CLB có thêm những người đồng hành.</p></div>
+            <div className="statement-context"><span>KHÔNG CHỈ LÀ GẶP GỠ</span><p>Là chia sẻ cách làm, lắng nghe góc nhìn khác và cùng nuôi dưỡng tinh thần nghiên cứu dài hạn.</p></div>
           </div>
           <div className="statement-ring ring-one" /><div className="statement-ring ring-two" />
           <span className="statement-label">SVNCKH-NET / 2026</span>
@@ -188,19 +195,25 @@ export default function App() {
         </section>
         </div>
 
-        <div className="activities-track" data-scene data-pinned>
+        <div className="activities-track">
         <section className="activities section-pad" id="hoat-dong">
-          <div className="section-kicker"><span>02</span><i /> CÙNG NHAU HOẠT ĐỘNG<span className="kicker-end">CUỘN ĐỂ KẾT NỐI →</span></div>
+          <div className="section-kicker"><span>02</span><i /> CÙNG NHAU HOẠT ĐỘNG<span className="kicker-end">KHÁM PHÁ THEO CHIỀU NGANG ↔</span></div>
           <div className="activities-heading"><h2>Một mạng lưới.<br /><em>Nhiều khả năng.</em></h2><p>Kết nối là điểm bắt đầu. Từ đó, các CLB cùng chia sẻ thông tin, khám phá cơ hội và tham gia những hoạt động chung.</p></div>
-          <div className="activity-grid">
-            {activities.map((item, index) => <article className={`activity-card activity-${index + 1}`} key={item.tag}>
-              <div className="activity-art"><span className="activity-art-index">0{index + 1} / 03</span><span className="activity-art-mark">{item.mark}</span><span className="activity-art-label">{item.tag}</span></div>
-              <div className="activity-card-copy"><span className="card-tag">{item.tag}</span><h3>{item.title}</h3><p>{item.text}</p><a href="#tham-gia" aria-label={`Tìm hiểu về ${item.tag.toLowerCase()}`}><Arrow diagonal /></a></div>
-            </article>)}
-          </div>
-          <div className="activity-progress" aria-hidden="true"><span>KHÁM PHÁ CÁC KHẢ NĂNG</span><i><b /></i><span>01 — 03</span></div>
+          <ActivityCarousel items={activities} />
         </section>
         </div>
+
+        <section className="connection-story section-pad" data-scene>
+          <div className="section-kicker" data-reveal><span>↗</span><i /> TỪ KẾT NỐI ĐẾN ĐỒNG HÀNH</div>
+          <div className="connection-story-layout">
+            <div className="connection-story-heading"><span className="story-overline">MỖI CLB MỘT THẾ MẠNH</span><h2>Nhiều góc nhìn.<br /><em>Chung một<br />tinh thần.</em></h2><p>Không cần có cùng điểm xuất phát để có thể đồng hành trên hành trình nghiên cứu.</p></div>
+            <div className="story-moments">
+              <article className="story-moment" data-reveal><span>01 / GẶP GỠ</span><h3>Bắt đầu từ một mối quan tâm chung.</h3><p>Giới thiệu lĩnh vực, hướng nghiên cứu và hoạt động của CLB để tìm những người có thể trao đổi cùng mình.</p><div className="story-tags"><span>Liên trường</span><span>Đa lĩnh vực</span></div></article>
+              <article className="story-moment" data-reveal><span>02 / TRAO ĐỔI</span><h3>Mang trải nghiệm của mình đến gần người khác.</h3><p>Từ cách tổ chức nhóm, xây dựng hoạt động đến bài học trong quá trình nghiên cứu: những điều nhỏ có thể giúp một CLB khác tiến thêm một bước.</p><div className="story-tags"><span>Kinh nghiệm thực tế</span><span>Học hỏi lẫn nhau</span></div></article>
+              <article className="story-moment" data-reveal><span>03 / CÙNG TIẾN</span><h3>Nuôi dưỡng những kết nối lâu dài.</h3><p>Theo dõi hoạt động chung, duy trì trao đổi và cùng đề xuất những chương trình phù hợp với cộng đồng nghiên cứu trẻ.</p><div className="story-tags"><span>Hoạt động chung</span><span>Cộng đồng nghiên cứu</span></div></article>
+            </div>
+          </div>
+        </section>
 
         <section className="join-section" id="tham-gia" data-scene>
           <div className="join-top">
@@ -214,6 +227,7 @@ export default function App() {
               <h3>{title}</h3><p>{text}</p>
             </article>)}
           </div>
+          <div className="join-preparation" data-reveal><div><span className="scene-label">CHUẨN BỊ TRƯỚC KHI BẮT ĐẦU</span><h3>Một hồ sơ rõ ràng.<br />Một hành trình thuận lợi hơn.</h3></div><ul><li><b>Thông tin tổ chức</b><span>Tên CLB, đơn vị chủ quản, lĩnh vực và người đại diện.</span></li><li><b>Dấu ấn hoạt động</b><span>Giới thiệu cơ cấu, hoạt động và minh chứng liên quan.</span></li><li><b>Theo dõi hướng dẫn</b><span>Thành phần hồ sơ và thời hạn được thông báo theo từng đợt.</span></li></ul></div>
           <div className="join-bottom"><p>Trước khi nộp, hãy xem kỹ thông báo về điều kiện, thành phần hồ sơ và thời gian tiếp nhận.</p><a className="button button-yellow" href="#faq">Xem thông tin cần biết <Arrow diagonal /></a></div>
         </section>
 

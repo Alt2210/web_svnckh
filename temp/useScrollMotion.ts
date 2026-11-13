@@ -13,13 +13,14 @@ export function useScrollMotion(rootRef: RefObject<HTMLDivElement | null>) {
     function setup() {
       dispose();
       if (!root) return;
+      const heroPanels = [...root.querySelectorAll<HTMLElement>('[data-hero-panel]')];
+      heroPanels.forEach((panel) => { panel.inert = false; panel.removeAttribute('aria-hidden'); });
       if (preference.matches) {
         root.classList.remove('motion-ready');
         return;
       }
       const scenes = [...root.querySelectorAll<HTMLElement>('[data-scene]')];
       const reveals = [...root.querySelectorAll<HTMLElement>('[data-reveal]')];
-      const rail = root.querySelector<HTMLElement>('.activity-grid');
       let frame = 0;
       let alive = true;
       let currentY = window.scrollY;
@@ -38,7 +39,6 @@ export function useScrollMotion(rootRef: RefObject<HTMLDivElement | null>) {
           top: element.getBoundingClientRect().top + window.scrollY,
           height: element.offsetHeight,
         }));
-        if (rail) root.style.setProperty('--rail-travel', `${Math.max(0, rail.scrollWidth - rail.clientWidth)}px`);
       };
 
       const render = () => {
@@ -52,6 +52,16 @@ export function useScrollMotion(rootRef: RefObject<HTMLDivElement | null>) {
             ? clamp((currentY - top) / Math.max(1, height - viewport))
             : clamp((currentY + viewport - top) / (height + viewport));
           element.style.setProperty('--scene-progress', progress.toFixed(5));
+          if (element.classList.contains('hero-track')) {
+            const scene = progress < 0.32 ? 0 : progress < 0.67 ? 1 : 2;
+            root.dataset.heroScene = String(scene);
+            heroPanels.forEach((panel, index) => {
+              const hidden = !compact && index !== scene;
+              panel.inert = hidden;
+              if (hidden) panel.setAttribute('aria-hidden', 'true');
+              else panel.removeAttribute('aria-hidden');
+            });
+          }
         }
         frame = currentY !== targetY ? requestAnimationFrame(render) : 0;
       };
@@ -84,6 +94,7 @@ export function useScrollMotion(rootRef: RefObject<HTMLDivElement | null>) {
         window.removeEventListener('scroll', onScroll);
         window.removeEventListener('resize', measure);
         root.classList.remove('motion-ready');
+        heroPanels.forEach((panel) => { panel.inert = false; panel.removeAttribute('aria-hidden'); });
       };
     }
     setup();
