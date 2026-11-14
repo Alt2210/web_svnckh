@@ -36,29 +36,44 @@ const stages = [
   ['04', 'Công nhận', 'Quyết định được ghi nhận theo thẩm quyền và thông tin trạng thái được cập nhật.'],
 ];
 
-const activities = [
+const statementPhotos = [
+  { src: 'assets/statement/social-science-talk.jpg', alt: 'Diễn giả chia sẻ tại tọa đàm về nghiên cứu khoa học xã hội và nhân văn' },
+  { src: 'assets/statement/national-project-award.jpg', alt: 'Đại diện chương trình trao biểu trưng tại tọa đàm về các công trình quốc gia' },
+  { src: 'assets/statement/research-awards.jpg', alt: 'Các nhà nghiên cứu trẻ nhận khen thưởng trong một sự kiện khoa học' },
+  { src: 'assets/statement/vr-demonstration.jpg', alt: 'Học sinh trải nghiệm thiết bị thực tế ảo tại hoạt động khoa học công nghệ' },
+  { src: 'assets/statement/regional-event.jpg', alt: 'Đại biểu tham dự chương trình khoa học thanh niên khu vực miền Nam' },
+];
+
+const featuredActivities = [
   {
-    tag: 'KẾT NỐI',
-    title: 'Gặp gỡ những người cùng mối quan tâm',
-    text: 'Khám phá các câu lạc bộ và hoạt động nghiên cứu của sinh viên ở nhiều trường.',
-    mark: 'N',
-    details: ['Giới thiệu câu lạc bộ', 'Kết nối giữa các trường', 'Tìm điểm chung trong nghiên cứu'],
+    id: 'knowledge-to-value',
+    tag: 'ĐỐI THOẠI TÀI NĂNG TRẺ · 10.11.2026',
+    title: 'Từ tri thức đến giá trị',
+    text: 'Tọa đàm về thương mại hóa nghiên cứu, công nghệ sâu và khởi nghiệp sáng tạo.',
+    mark: '01',
+    image: 'assets/activities/toa-dam-tu-tri-thuc-den-gia-tri.jpg',
+    imageAlt: 'Áp phích tọa đàm Từ tri thức đến giá trị, lúc 09h00 ngày 10 tháng 11 năm 2026 tại Đại học Bách khoa Hà Nội',
+    details: ['09h00, ngày 10.11.2026', 'Phòng Hội thảo C2, Đại học Bách khoa Hà Nội'],
+    source: 'https://tuoitre.vn/me-de-giong-doc-ai-review-phim-chia-se-cach-dua-nghien-cuu-khoa-hoc-ra-thi-truong-100261110193415365.htm',
   },
   {
-    tag: 'CHIA SẺ',
-    title: 'Mở rộng cơ hội học hỏi và hợp tác',
-    text: 'Cùng trao đổi kinh nghiệm, kết nối nguồn lực và đề xuất hoạt động chung.',
-    mark: '↗',
-    details: ['Chia sẻ kinh nghiệm vận hành', 'Trao đổi phương pháp nghiên cứu', 'Đề xuất hoạt động liên CLB'],
-  },
-  {
-    tag: 'THAM GIA',
-    title: 'Theo dõi thông tin từ Mạng lưới',
-    text: 'Cập nhật thông báo, chương trình và các sự kiện dành cho cộng đồng thành viên.',
-    mark: '✳',
-    details: ['Theo dõi thông báo', 'Tìm hiểu chương trình học thuật', 'Cập nhật hướng dẫn tham gia'],
+    id: 'young-talent-national-projects',
+    tag: 'TỌA ĐÀM KHOA HỌC · 10.11.2026',
+    title: 'Tài năng trẻ với những đại công trình quốc gia',
+    text: 'Tọa đàm về làm chủ công nghệ và những bài toán lớn dành cho nhà khoa học trẻ.',
+    mark: '02',
+    image: 'assets/activities/toa-dam-tai-nang-tre-dai-cong-trinh.jpg',
+    imageAlt: 'Áp phích tọa đàm Tài năng trẻ với những đại công trình quốc gia, lúc 14h00 ngày 10 tháng 11 năm 2026 tại Trường Đại học Xây dựng Hà Nội',
+    details: ['14h00, ngày 10.11.2026', 'Phòng 13H2, Trường Đại học Xây dựng Hà Nội'],
+    source: 'https://tienphong.vn/tai-nang-tre-truoc-co-hoi-giai-nhung-bai-toan-lon-cua-dat-nuoc-post1893190.tpo',
   },
 ];
+
+// Lặp hai hoạt động có áp phích thật để đủ bốn thẻ cho bản demo.
+const activities = [1, 2].flatMap((round) => featuredActivities.map((activity) => ({
+  ...activity,
+  id: `${activity.id}-demo-${round}`,
+})));
 
 const faqs = [
   {
@@ -188,6 +203,11 @@ export default function App() {
             <p className="statement-line">{['Từ những ý tưởng', 'riêng lẻ đến một', 'cộng đồng cùng tiến.'].map((line, index) => <span className={`statement-fragment fragment-${index}`} key={line} style={{ '--line-index': index } as CSSProperties}>{line}</span>)}</p>
             <div className="statement-aside"><span className="statement-star">✳</span><p>Nơi hành trình nghiên cứu của mỗi CLB có thêm những người đồng hành.</p></div>
             <div className="statement-context"><span>KHÔNG CHỈ LÀ GẶP GỠ</span><p>Là chia sẻ cách làm, lắng nghe góc nhìn khác và cùng nuôi dưỡng tinh thần nghiên cứu dài hạn.</p></div>
+          </div>
+          <div className="statement-photos" aria-hidden="true">
+            {statementPhotos.map((photo, index) => <figure className={`statement-photo statement-photo-${index + 1}`} key={photo.src}>
+              <img src={`${import.meta.env.BASE_URL}${photo.src}`} alt="" loading="lazy" />
+            </figure>)}
           </div>
           <div className="statement-ring ring-one" /><div className="statement-ring ring-two" />
           <span className="statement-label">SVNCKH-NET / 2026</span>

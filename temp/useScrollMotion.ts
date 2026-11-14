@@ -28,6 +28,7 @@ export function useScrollMotion(rootRef: RefObject<HTMLDivElement | null>) {
       let viewport = window.innerHeight;
       let compact = window.innerWidth <= 680;
       let documentHeight = document.documentElement.scrollHeight;
+      let activeHeroScene = 0;
       let measurements: { element: HTMLElement; top: number; height: number }[] = [];
 
       const measure = () => {
@@ -53,10 +54,22 @@ export function useScrollMotion(rootRef: RefObject<HTMLDivElement | null>) {
             : clamp((currentY + viewport - top) / (height + viewport));
           element.style.setProperty('--scene-progress', progress.toFixed(5));
           if (element.classList.contains('hero-track')) {
-            const scene = progress < 0.32 ? 0 : progress < 0.67 ? 1 : 2;
-            root.dataset.heroScene = String(scene);
+            const scrollProgress = pinned
+              ? clamp((targetY - top) / Math.max(1, height - viewport))
+              : progress;
+            if (activeHeroScene === 0) {
+              if (scrollProgress >= 0.69) activeHeroScene = 2;
+              else if (scrollProgress >= 0.34) activeHeroScene = 1;
+            } else if (activeHeroScene === 1) {
+              if (scrollProgress >= 0.69) activeHeroScene = 2;
+              else if (scrollProgress <= 0.29) activeHeroScene = 0;
+            } else if (activeHeroScene === 2) {
+              if (scrollProgress <= 0.29) activeHeroScene = 0;
+              else if (scrollProgress <= 0.61) activeHeroScene = 1;
+            }
+            root.dataset.heroScene = String(activeHeroScene);
             heroPanels.forEach((panel, index) => {
-              const hidden = !compact && index !== scene;
+              const hidden = !compact && index !== activeHeroScene;
               panel.inert = hidden;
               if (hidden) panel.setAttribute('aria-hidden', 'true');
               else panel.removeAttribute('aria-hidden');

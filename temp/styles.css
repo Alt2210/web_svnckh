@@ -138,17 +138,11 @@ h2 { margin: 0; font-size: clamp(43px, 5.2vw, 69px); letter-spacing: -.045em; li
 .activities { background: #fff; }
 .activities-heading { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin: 43px 0 48px; }
 .activities-heading > p { max-width: 340px; margin: 0 4% 5px 0; color: #647185; font-size: 15px; line-height: 1.65; }
-.activity-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+.activity-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 18px; }
 .activity-card { background: #f4f6f7; }
-.activity-art { height: 250px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; color: white; background: linear-gradient(135deg,#083a82,#1689e3); }
-.activity-2 .activity-art { background: linear-gradient(140deg,#052553,#0b63b3); }
-.activity-3 .activity-art { color: var(--navy); background: linear-gradient(145deg,#f6d744,#f5bd36); }
-.activity-art::before,.activity-art::after { content: ""; position: absolute; width: 240px; aspect-ratio: 1; border: 1px solid rgba(255,255,255,.26); border-radius: 50%; }
-.activity-art::after { width: 155px; border-color: rgba(255,255,255,.34); }
-.activity-3 .activity-art::before,.activity-3 .activity-art::after { border-color: rgba(7,27,59,.2); }
-.activity-art-index,.activity-art-label { position: absolute; top: 17px; left: 18px; font: 9px/1 Arial,sans-serif; letter-spacing: .14em; opacity: .75; }
-.activity-art-label { top: auto; bottom: 17px; left: auto; right: 18px; }
-.activity-art-mark { position: relative; z-index: 1; font-size: 90px; font-weight: 700; line-height: 1; }
+.activity-art { height: 250px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #082e70; }
+.activity-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.activity-art-index { position: absolute; top: 11px; left: 11px; padding: 7px 8px; border-radius: 2px; color: white; background: rgba(4,21,52,.72); font: 9px/1 Arial,sans-serif; letter-spacing: .14em; }
 .activity-card-copy { position: relative; padding: 24px 22px 65px; }
 .card-tag { color: var(--blue); font-size: 9px; font-weight: 700; letter-spacing: .16em; }
 .activity-card h3 { max-width: 280px; margin: 16px 0 10px; font-size: 21px; line-height: 1.2; letter-spacing: -.025em; }
@@ -266,10 +260,7 @@ h2 { margin: 0; font-size: clamp(43px, 5.2vw, 69px); letter-spacing: -.045em; li
   .activity-grid { grid-template-columns: 1fr; gap: 15px; }
   .activity-card { display: grid; grid-template-columns: .86fr 1.14fr; min-height: 190px; }
   .activity-art { height: auto; min-height: 190px; }
-  .activity-art::before { width: 155px; }.activity-art::after { width: 100px; }
-  .activity-art-mark { font-size: 65px; }
-  .activity-art-index,.activity-art-label { left: 10px; font-size: 7px; }
-  .activity-art-label { left: auto; right: 9px; }
+  .activity-art-index { top: 8px; left: 8px; font-size: 7px; }
   .activity-card-copy { padding: 17px 14px 50px; }
   .activity-card h3 { margin: 10px 0 7px; font-size: 16px; }
   .activity-card p { font-size: 11px; line-height: 1.45; }
