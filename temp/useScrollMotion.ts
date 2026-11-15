@@ -29,6 +29,8 @@ export function useScrollMotion(rootRef: RefObject<HTMLDivElement | null>) {
       let compact = window.innerWidth <= 680;
       let documentHeight = document.documentElement.scrollHeight;
       let activeHeroScene = 0;
+      // Separate entry and exit thresholds create a dead band against scroll jitter.
+      const heroSceneThresholds = { firstEnter: 0.34, firstExit: 0.29, secondEnter: 0.69, secondExit: 0.61 };
       let measurements: { element: HTMLElement; top: number; height: number }[] = [];
 
       const measure = () => {
@@ -58,14 +60,14 @@ export function useScrollMotion(rootRef: RefObject<HTMLDivElement | null>) {
               ? clamp((targetY - top) / Math.max(1, height - viewport))
               : progress;
             if (activeHeroScene === 0) {
-              if (scrollProgress >= 0.69) activeHeroScene = 2;
-              else if (scrollProgress >= 0.34) activeHeroScene = 1;
+              if (scrollProgress >= heroSceneThresholds.secondEnter) activeHeroScene = 2;
+              else if (scrollProgress >= heroSceneThresholds.firstEnter) activeHeroScene = 1;
             } else if (activeHeroScene === 1) {
-              if (scrollProgress >= 0.69) activeHeroScene = 2;
-              else if (scrollProgress <= 0.29) activeHeroScene = 0;
+              if (scrollProgress >= heroSceneThresholds.secondEnter) activeHeroScene = 2;
+              else if (scrollProgress <= heroSceneThresholds.firstExit) activeHeroScene = 0;
             } else if (activeHeroScene === 2) {
-              if (scrollProgress <= 0.29) activeHeroScene = 0;
-              else if (scrollProgress <= 0.61) activeHeroScene = 1;
+              if (scrollProgress <= heroSceneThresholds.firstExit) activeHeroScene = 0;
+              else if (scrollProgress <= heroSceneThresholds.secondExit) activeHeroScene = 1;
             }
             root.dataset.heroScene = String(activeHeroScene);
             heroPanels.forEach((panel, index) => {

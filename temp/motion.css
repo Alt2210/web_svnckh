@@ -161,8 +161,10 @@ body { overflow-x: clip; }
   .hero { position: sticky; top: 0; height: 100svh; min-height: 0; padding: 110px clamp(32px,7vw,120px) 65px; gap: 3vw; }
   .hero h1 { font-size: clamp(60px,min(7.1vw,11.3vh),108px); }
   .hero-copy { position: relative; z-index: 3; transform: translateY(0); opacity: 1; transition: opacity .38s ease, transform .55s cubic-bezier(.2,.8,.2,1); will-change: transform, opacity; }
-  .hero .network-art { width: min(42vw,62vh,590px); }
-  .hero-scene-copy { display: block; position: absolute; z-index: 4; left: clamp(32px,7vw,120px); top: 23%; width: 45%; max-width: 580px; opacity: 0; transform: translateY(28px); pointer-events: none; transition: opacity .38s ease, transform .55s cubic-bezier(.2,.8,.2,1); }
+  .hero .network-art { width: min(46vw,68vh,660px); }
+  /* The art keeps moving on the continuous, smoothed scroll progress. */
+  .hero-track .network-art { transform: translate3d(calc((.5 - var(--scene-progress,0)) * 50px),calc((.5 - var(--scene-progress,0)) * 104px),0) rotate(calc((var(--scene-progress,0) - .5) * 14deg)) scale(calc(.9 + var(--scene-progress,0) * .2)); transform-origin: center; will-change: transform; }
+  .hero-scene-copy { display: block; position: absolute; z-index: 4; left: clamp(32px,7vw,120px); top: 23%; width: 45%; max-width: 580px; opacity: 0; transform: translateY(18px); pointer-events: none; transition: opacity .34s ease, transform .46s cubic-bezier(.2,.8,.2,1); }
   .hero-scene-copy h2 { font-size: clamp(48px,min(6vw,9vh),88px); line-height: 1.05; margin: 20px 0; }
   .hero-scene-copy p { color: #d2e3fb; font-size: 15px; line-height: 1.8; }
   .hero-scene-third { top: 21%; }

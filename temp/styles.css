@@ -92,8 +92,8 @@ a:hover .arrow { transform: translate(2px, -2px); }
 .art-lines .line-soft { stroke: rgba(248,209,50,.34); stroke-dasharray: 2 8; }
 .art-dot { position: absolute; z-index: 2; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.55); border-radius: 50%; background: rgba(18,91,171,.7); color: white; box-shadow: 0 12px 35px rgba(0,0,0,.22); backdrop-filter: blur(8px); }
 .art-dot i { font-style: normal; font-size: 11px; letter-spacing: .08em; }
-.dot-main { width: 100px; height: 100px; top: 40%; left: 40%; background: #fff; border: 7px solid rgba(255,255,255,.19); box-shadow: 0 0 0 1px rgba(248,209,50,.8), 0 15px 45px rgba(0,0,0,.32); }
-.dot-main img { width: 55px; height: 55px; object-fit: contain; }
+.dot-main { width: 100px; height: 100px; top: 50%; left: 50%; transform: translate(-50%,-50%); background: #fff; border: 7px solid rgba(255,255,255,.19); box-shadow: 0 0 0 1px rgba(248,209,50,.8), 0 15px 45px rgba(0,0,0,.32); }
+.dot-main img { width: 55px; height: 55px; object-fit: contain; transform: scale(1.3); transform-origin: center; }
 .dot-a,.dot-b,.dot-c,.dot-d,.dot-e,.dot-f { width: 54px; height: 54px; }
 .dot-a { top: 20%; left: 17%; }.dot-b { top: 16%; right: 14%; }.dot-c { top: 50%; right: 7%; background: rgba(3,62,145,.85); }.dot-d { right: 22%; bottom: 9%; background: rgba(18,91,171,.72); }.dot-e { left: 16%; bottom: 17%; background: rgba(3,62,145,.88); }.dot-f { top: 1%; left: 43%; width: 38px; height: 38px; color: var(--gold); background: rgba(255,255,255,.08); border-color: rgba(248,209,50,.5); }
 .dot-c i, .dot-d i, .dot-e i { max-width: 46px; font-size: 8px; line-height: 1.15; letter-spacing: .02em; text-align: center; }

@@ -57,7 +57,7 @@
   .scroll-cue-line { width: 20px; flex-shrink: 0; }
   .network-art { width: min(100%, 400px); height: auto; aspect-ratio: 1 / 1; margin: 28px auto 0; isolation: isolate; }
   .art-dot { aspect-ratio: 1; border-radius: 50%; }
-  .dot-main { width: 22%; height: auto; left: 39%; top: 39%; border-width: 5px; }
+  .dot-main { width: 22%; height: auto; left: 50%; top: 50%; border-width: 5px; }
   .dot-main img { width: 70%; height: 70%; aspect-ratio: 1; object-fit: contain; }
   .art-dot:not(.dot-main) { width: 12%; height: auto; }
   .art-dot.dot-f { width: 9%!important; height: auto!important; }
