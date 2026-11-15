@@ -96,6 +96,7 @@ a:hover .arrow { transform: translate(2px, -2px); }
 .dot-main img { width: 55px; height: 55px; object-fit: contain; }
 .dot-a,.dot-b,.dot-c,.dot-d,.dot-e,.dot-f { width: 54px; height: 54px; }
 .dot-a { top: 20%; left: 17%; }.dot-b { top: 16%; right: 14%; }.dot-c { top: 50%; right: 7%; background: rgba(3,62,145,.85); }.dot-d { right: 22%; bottom: 9%; background: rgba(18,91,171,.72); }.dot-e { left: 16%; bottom: 17%; background: rgba(3,62,145,.88); }.dot-f { top: 1%; left: 43%; width: 38px; height: 38px; color: var(--gold); background: rgba(255,255,255,.08); border-color: rgba(248,209,50,.5); }
+.dot-c i, .dot-d i, .dot-e i { max-width: 46px; font-size: 8px; line-height: 1.15; letter-spacing: .02em; text-align: center; }
 .art-caption { position: absolute; color: rgba(255,255,255,.56); font-size: 9px; letter-spacing: .2em; }
 .caption-top { top: 8%; right: 0; }.caption-bottom { bottom: 7%; left: 5%; }
 .art-note { position: absolute; right: -4%; bottom: 25%; max-width: 178px; padding: 12px 14px; border: 1px solid rgba(255,255,255,.18); border-radius: 4px; color: rgba(255,255,255,.72); background: rgba(4,30,70,.55); font-size: 10px; line-height: 1.45; backdrop-filter: blur(10px); }

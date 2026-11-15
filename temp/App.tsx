@@ -68,13 +68,31 @@ const featuredActivities = [
     details: ['14h00, ngày 10.11.2026', 'Phòng 13H2, Trường Đại học Xây dựng Hà Nội'],
     source: 'https://tienphong.vn/tai-nang-tre-truoc-co-hoi-giai-nhung-bai-toan-lon-cua-dat-nuoc-post1893190.tpo',
   },
+  {
+    id: 'golden-globe-award-2026',
+    tag: 'GIẢI THƯỞNG KHOA HỌC CÔNG NGHỆ · 2026',
+    title: 'Giải thưởng Quả Cầu Vàng 2026',
+    text: 'Tôn vinh tài năng trẻ có thành tích nổi bật trong nghiên cứu khoa học và phát triển công nghệ.',
+    mark: '03',
+    image: 'assets/activities/qcv-2026.jpg',
+    imageAlt: 'Áp phích Giải thưởng Khoa học Công nghệ Quả Cầu Vàng năm 2026',
+    details: ['Hạn đăng ký: 15.08.2026', 'qcv.tainangviet.vn'],
+    source: 'https://qcv.tainangviet.vn/',
+  },
+  {
+    id: 'female-science-award-2026',
+    tag: 'GIẢI THƯỞNG NỮ SINH KHOA HỌC CÔNG NGHỆ · 2026',
+    title: 'Giải thưởng Nữ sinh Khoa học Công nghệ Việt Nam',
+    text: 'Ghi nhận và khuyến khích nữ sinh có thành tích tiêu biểu trong học tập, nghiên cứu khoa học và công nghệ.',
+    mark: '04',
+    image: 'assets/activities/female-science-award-2026.jpg',
+    imageAlt: 'Áp phích Giải thưởng Nữ sinh Khoa học Công nghệ Việt Nam 2026',
+    details: ['Hạn đăng ký: 15.08.2026', 'gtns.tainangviet.vn'],
+    source: 'https://gtns.tainangviet.vn/',
+  },
 ];
 
-// Lặp hai hoạt động có áp phích thật để đủ bốn thẻ cho bản demo.
-const activities = [1, 2].flatMap((round) => featuredActivities.map((activity) => ({
-  ...activity,
-  id: `${activity.id}-demo-${round}`,
-})));
+const activities = featuredActivities;
 
 const faqs = [
   {
@@ -111,13 +129,12 @@ function NetworkArtwork() {
       <span className="art-dot dot-main"><img src={`${import.meta.env.BASE_URL}assets/logo.svg`} alt="" /></span>
       <span className="art-dot dot-a"><i>CLB</i></span>
       <span className="art-dot dot-b"><i>SV</i></span>
-      <span className="art-dot dot-c"><i>01</i></span>
-      <span className="art-dot dot-d"><i>02</i></span>
-      <span className="art-dot dot-e"><i>03</i></span>
+      <span className="art-dot dot-c"><i>LIÊN<br />KẾT</i></span>
+      <span className="art-dot dot-d"><i>CỘNG<br />HƯỞNG</i></span>
+      <span className="art-dot dot-e"><i>LAN<br />TỎA</i></span>
       <span className="art-dot dot-f"><i><SymbolIcon glyph="+" /></i></span>
       <span className="art-caption caption-top">KẾT NỐI TRI THỨC</span>
       <span className="art-caption caption-bottom">TỪNG CLB · CHUNG MỘT MẠNG LƯỚI</span>
-      <span className="art-axis" aria-hidden="true">01 / LIÊN KẾT<br />02 / CỘNG HƯỞNG<br />03 / LAN TỎA</span>
       <div className="art-note"><span className="live-dot" /> Mạng lưới mở rộng từ những kết nối đầu tiên</div>
     </div>
   );
