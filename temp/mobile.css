@@ -1,0 +1,115 @@
+/* Icons retain their geometry and color independently of mobile system fonts. */
+.symbol-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  min-width: 1em;
+  aspect-ratio: 1;
+  flex: none;
+  vertical-align: -.12em;
+  overflow: visible;
+}
+.activity-art-mark .symbol-icon,
+.statement-large-star .symbol-icon,
+.kinetic-track i .symbol-icon { display: block; }
+.activity-arrows button { display: inline-grid; place-items: center; }
+.arrow, .footnote-mark, .statement-star, .pillar-icon, .closing-star, .art-cross { flex-shrink: 0; }
+.hero-checklist li::before, .activity-details li::before {
+  content: '';
+  display: inline-block;
+  width: .85em;
+  height: .85em;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 19 19 5M5 5h14v14' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 19 19 5M5 5h14v14' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+@media (max-width: 680px) {
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  .temp-experience { width: 100%; min-width: 0; }
+  .temp-experience *, .temp-experience *::before, .temp-experience *::after { box-sizing: border-box; }
+  .hero-copy, .hero-scene-copy, .intro-body, .activities-heading,
+  .activity-card-copy, .story-moment, .faq-list, .footer-main > * { min-width: 0; }
+  .brand, .brand img, .brand-name, .eyebrow-rule, .live-dot { flex-shrink: 0; }
+  .brand-name { white-space: nowrap; }
+  .brand img { aspect-ratio: 1; object-fit: contain; display: block; }
+  .site-header { gap: 16px; padding-inline: max(20px, env(safe-area-inset-left)); }
+  .menu-toggle { width: 44px; height: 44px; flex: 0 0 44px; padding: 0; }
+  .menu-toggle span { flex: 0 0 1px; }
+  .main-nav { max-height: calc(100dvh - 70px); overflow-y: auto; padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+  .main-nav > a { min-height: 44px; }
+  .main-nav .nav-cta { gap: 12px; }
+  .main-nav .nav-cta .arrow { flex-shrink: 0; }
+  .hero { height: auto; min-height: 0; }
+  .hero h1 { font-size: clamp(43px, 13vw, 70px); line-height: 1.03; }
+  .hero-line { overflow: visible; }
+  .hero-desc { max-width: 100%; line-height: 1.8; }
+  .hero-actions { align-items: flex-start; gap: 14px 20px; }
+  .button { max-width: 100%; min-height: 48px; line-height: 1.5; padding-block: 12px; text-align: center; }
+  .text-link { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; }
+  .hero-facts { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .hero-checklist { line-height: 1.9; }
+  .hero-checklist li { margin-bottom: 9px; }
+  .hero-chapter { min-width: 0; font-size: clamp(6px, 1.8vw, 8px); letter-spacing: .06em; }
+  .hero-index { gap: 16px; align-items: flex-end; }
+  .hero-index > span { max-width: 42%; text-align: right; line-height: 1.6; }
+  .scroll-cue { gap: 7px; font-size: 7px; white-space: nowrap; }
+  .scroll-cue-line { width: 20px; flex-shrink: 0; }
+  .network-art { width: min(100%, 400px); height: auto; aspect-ratio: 1 / 1; margin: 28px auto 0; isolation: isolate; }
+  .art-dot { aspect-ratio: 1; border-radius: 50%; }
+  .dot-main { width: 22%; height: auto; left: 39%; top: 39%; border-width: 5px; }
+  .dot-main img { width: 70%; height: 70%; aspect-ratio: 1; object-fit: contain; }
+  .art-dot:not(.dot-main) { width: 12%; height: auto; }
+  .art-dot.dot-f { width: 9%!important; height: auto!important; }
+  .dot-f i { display: grid; place-items: center; width: 100%; }
+  .art-caption { font-size: clamp(6px, 1.7vw, 8px); letter-spacing: .08em; }
+  .caption-top { top: 6%; right: 0; }
+  .caption-bottom { bottom: 6%; left: 0; }
+  .art-note { right: 0; bottom: 19%; max-width: 38%; font-size: clamp(7px, 1.9vw, 9px); padding: 8px; }
+  .art-axis { display: none; }
+  .section-kicker { gap: 9px; font-size: 8px; line-height: 1.7; letter-spacing: .08em; }
+  .section-kicker i { flex-shrink: 0; }
+  .statement-fragment { overflow-wrap: break-word; }
+  .statement-star { display: grid; place-items: center; width: 1em; height: 1em; }
+  .statement-context p { font-size: 13px; }
+  .activity-controls { align-items: center; }
+  .activity-controls p { font-size: 11px; }
+  .activity-arrows { flex-shrink: 0; }
+  .activity-arrows button { width: 44px; height: 44px; padding: 0; }
+  .activities .activity-grid { -webkit-overflow-scrolling: touch; scroll-padding-inline: 0; }
+  .activities .activity-card { flex-basis: calc(100% - 16px); grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .activity-art { min-width: 0; }
+  .activity-poster { object-fit: contain; object-position: center; }
+  .activity-card-copy { padding: 18px 12px 66px; }
+  .activity-card h3 { font-size: clamp(16px, 4.5vw, 20px); line-height: 1.35; overflow-wrap: break-word; }
+  .activity-card p { font-size: 12px; line-height: 1.7; }
+  .activity-details li { font-size: 11px; line-height: 1.8; }
+  .activity-card-copy > a { width: 44px; height: 44px; right: 12px; bottom: 12px; }
+  .activity-progress { flex-wrap: wrap; }
+  .activity-progress > i { min-width: 40px; }
+  .story-moment h3 { overflow-wrap: break-word; }
+  .steps { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .step h3 { font-size: 17px; line-height: 1.4; }
+  .faq-item button { gap: 12px; min-height: 56px; }
+  .faq-item button > span { min-width: 0; }
+  .faq-item button b { width: 32px; height: 32px; flex: 0 0 32px; }
+  .faq-item button .symbol-icon { font-size: 16px; }
+  .faq-item p { margin-right: 0; line-height: 1.9; }
+  .closing h2 { font-size: clamp(39px, 10.5vw, 61px); line-height: 1.12; }
+  .closing-star { top: 15%; right: 7%; }
+  .footer-bottom { align-items: center; line-height: 1.7; }
+}
+
+@media (max-width: 420px) {
+  .steps { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 360px) {
+  .hero, .section-pad, .join-section { padding-inline: 18px; }
+  .site-header { padding-inline: 18px; }
+  .hero-scene-copy h2, .connection-story h2 { font-size: 38px; }
+  .hero-facts { grid-template-columns: 1fr; }
+  .story-moment { padding: 23px; }
+  .hero-index { left: 18px; right: 18px; }
+  .hero-index > span { font-size: 6px; }
+}

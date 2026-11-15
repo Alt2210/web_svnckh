@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { SymbolIcon } from './SymbolIcon';
 
 interface Activity {
   id: string;
@@ -55,15 +56,15 @@ export function ActivityCarousel({ items }: { items: Activity[] }) {
       <div className="activity-controls">
         <p id="activity-instructions">Vuốt ngang, kéo thanh cuộn hoặc dùng nút mũi tên.</p>
         <div className="activity-arrows">
-          <button type="button" aria-label="Xem hoạt động trước" aria-controls="activity-rail" disabled={position.start} onClick={() => move(-1)}>←</button>
-          <button type="button" aria-label="Xem hoạt động tiếp theo" aria-controls="activity-rail" disabled={position.end} onClick={() => move(1)}>→</button>
+          <button type="button" aria-label="Xem hoạt động trước" aria-controls="activity-rail" disabled={position.start} onClick={() => move(-1)}><SymbolIcon glyph="←" /></button>
+          <button type="button" aria-label="Xem hoạt động tiếp theo" aria-controls="activity-rail" disabled={position.end} onClick={() => move(1)}><SymbolIcon glyph="→" /></button>
         </div>
       </div>
       <div ref={railRef} id="activity-rail" className="activity-grid" role="region" aria-label="Các hoạt động của Mạng lưới" aria-describedby="activity-instructions" tabIndex={0} onScroll={updatePosition} onKeyDown={onKeyDown}>
         {items.map((item, index) => (
           <article className={`activity-card activity-${index + 1}`} key={item.id}>
             <div className="activity-art"><img className="activity-poster" src={`${import.meta.env.BASE_URL}${item.image}`} alt={item.imageAlt} /><span className="activity-art-index">0{index + 1} / 0{items.length}</span></div>
-            <div className="activity-card-copy"><span className="card-tag">{item.tag}</span><h3>{item.title}</h3><p>{item.text}</p><ul className="activity-details">{item.details.map((detail) => <li key={detail}>{detail}</li>)}</ul><a href={item.source} target="_blank" rel="noreferrer" aria-label={`Đọc thêm về ${item.title}`}><span aria-hidden="true">↗</span></a></div>
+            <div className="activity-card-copy"><span className="card-tag">{item.tag}</span><h3>{item.title}</h3><p>{item.text}</p><ul className="activity-details">{item.details.map((detail) => <li key={detail}>{detail}</li>)}</ul><a href={item.source} target="_blank" rel="noreferrer" aria-label={`Đọc thêm về ${item.title}`}><SymbolIcon glyph="↗" /></a></div>
           </article>
         ))}
       </div>

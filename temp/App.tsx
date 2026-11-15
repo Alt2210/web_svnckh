@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useScrollMotion } from './useScrollMotion';
 import { ActivityCarousel } from './ActivityCarousel';
+import { SymbolIcon } from './SymbolIcon';
 
 const navItems = [
   ['Mạng lưới', '#mang-luoi'],
@@ -91,7 +92,7 @@ const faqs = [
 ];
 
 function Arrow({ diagonal = false }: { diagonal?: boolean }) {
-  return <span aria-hidden="true" className="arrow">{diagonal ? '↗' : '→'}</span>;
+  return <span aria-hidden="true" className="arrow"><SymbolIcon glyph={diagonal ? '↗' : '→'} /></span>;
 }
 
 function NetworkArtwork() {
@@ -101,8 +102,8 @@ function NetworkArtwork() {
       <div className="art-orbit orbit-two" />
       <div className="art-orbit orbit-three" />
       <div className="art-scan" aria-hidden="true" />
-      <div className="art-cross cross-one" aria-hidden="true">+</div>
-      <div className="art-cross cross-two" aria-hidden="true">+</div>
+      <div className="art-cross cross-one" aria-hidden="true"><SymbolIcon glyph="+" /></div>
+      <div className="art-cross cross-two" aria-hidden="true"><SymbolIcon glyph="+" /></div>
       <svg className="art-lines" viewBox="0 0 560 560" fill="none" aria-hidden="true">
         <path d="M278 278 120 146M278 278 428 130M278 278 463 310M278 278 385 455M278 278 124 408M278 278 218 78M278 278 282 490" />
         <path d="M120 146 218 78M428 130 463 310M124 408 282 490" className="line-soft" />
@@ -113,7 +114,7 @@ function NetworkArtwork() {
       <span className="art-dot dot-c"><i>01</i></span>
       <span className="art-dot dot-d"><i>02</i></span>
       <span className="art-dot dot-e"><i>03</i></span>
-      <span className="art-dot dot-f"><i>+</i></span>
+      <span className="art-dot dot-f"><i><SymbolIcon glyph="+" /></i></span>
       <span className="art-caption caption-top">KẾT NỐI TRI THỨC</span>
       <span className="art-caption caption-bottom">TỪNG CLB · CHUNG MỘT MẠNG LƯỚI</span>
       <span className="art-axis" aria-hidden="true">01 / LIÊN KẾT<br />02 / CỘNG HƯỞNG<br />03 / LAN TỎA</span>
@@ -145,10 +146,10 @@ export default function App() {
           <img src={`${import.meta.env.BASE_URL}assets/logo-white.svg`} alt="" />
           <span className="brand-name"><b>SVNCKH</b><small>NETWORK</small></span>
         </a>
-        <button className={`menu-toggle ${menuOpen ? 'is-open' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? 'Đóng menu' : 'Mở menu'}>
+        <button type="button" className={`menu-toggle ${menuOpen ? 'is-open' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-controls="temp-navigation" aria-expanded={menuOpen} aria-label={menuOpen ? 'Đóng menu' : 'Mở menu'}>
           <span /><span />
         </button>
-        <nav className={menuOpen ? 'main-nav is-open' : 'main-nav'} aria-label="Điều hướng chính">
+        <nav id="temp-navigation" className={menuOpen ? 'main-nav is-open' : 'main-nav'} aria-label="Điều hướng chính">
           {navItems.map(([label, href]) => <a key={href} href={href} onClick={closeMenu}>{label}</a>)}
           <a className="nav-cta" href="#tham-gia" onClick={closeMenu}>Tìm hiểu cách tham gia <Arrow diagonal /></a>
         </nav>
@@ -166,17 +167,17 @@ export default function App() {
               <a className="button button-yellow" href="#mang-luoi">Khám phá Mạng lưới <Arrow diagonal /></a>
               <a className="text-link" href="#tham-gia">Dành cho CLB <Arrow /></a>
             </div>
-            <div className="hero-footnote"><span className="footnote-mark">✳</span><span>Kết nối câu lạc bộ<br />Lan tỏa tinh thần nghiên cứu</span></div>
+            <div className="hero-footnote"><span className="footnote-mark"><SymbolIcon glyph="✳" /></span><span>Kết nối câu lạc bộ<br />Lan tỏa tinh thần nghiên cứu</span></div>
           </div>
           <NetworkArtwork />
           <div className="hero-scene-copy" data-hero-panel="1"><span className="scene-label">02 / CỘNG ĐỒNG CÙNG TIẾN</span><h2>Đến vô vàn<br /><em>khả năng.</em></h2><p>Mỗi câu lạc bộ là một điểm sáng. Khi kết nối, những trải nghiệm riêng trở thành nguồn cảm hứng chung.</p><ul className="hero-facts"><li><b>Kết nối liên trường</b><span>Gặp gỡ những CLB có chung mối quan tâm.</span></li><li><b>Chia sẻ để phát triển</b><span>Cùng trao đổi kinh nghiệm và cách làm nghiên cứu.</span></li></ul></div>
           <div className="hero-scene-copy hero-scene-third" data-hero-panel="2"><span className="scene-label">03 / BẮT ĐẦU HÀNH TRÌNH</span><h2>Một hồ sơ.<br /><em>Một khởi đầu.</em></h2><p>Tìm hiểu Mạng lưới, chuẩn bị thông tin câu lạc bộ và theo dõi đợt tiếp nhận phù hợp.</p><ul className="hero-checklist"><li>Hồ sơ tổ chức và người đại diện</li><li>Minh chứng hoạt động nghiên cứu</li><li>Thẩm định và công nhận theo quy trình</li></ul><a className="button button-yellow" href="#tham-gia">Khám phá cách tham gia <Arrow diagonal /></a></div>
           <div className="hero-chapters" aria-label="Ba chặng giới thiệu"><span className="hero-chapter chapter-0"><b>01</b>KẾT NỐI</span><span className="hero-chapter chapter-1"><b>02</b>CỘNG HƯỞNG</span><span className="hero-chapter chapter-2"><b>03</b>KHỞI ĐẦU</span></div>
-          <div className="hero-index"><a href="#mang-luoi" className="scroll-cue"><span className="scroll-cue-line" />CUỘN ĐỂ KHÁM PHÁ ↓</a><span>SVNCKH / KẾT NỐI KHÔNG GIỚI HẠN</span></div>
+          <div className="hero-index"><a href="#mang-luoi" className="scroll-cue"><span className="scroll-cue-line" />CUỘN ĐỂ KHÁM PHÁ <SymbolIcon glyph="↓" /></a><span>SVNCKH / KẾT NỐI KHÔNG GIỚI HẠN</span></div>
         </section>
         </div>
 
-        <div className="kinetic-band" data-scene aria-hidden="true"><div className="kinetic-track">KẾT NỐI <i>✳</i> NGHIÊN CỨU <i>✳</i> CỘNG HƯỞNG <i>✳</i> KẾT NỐI <i>✳</i> NGHIÊN CỨU <i>✳</i> CỘNG HƯỞNG <i>✳</i></div></div>
+        <div className="kinetic-band" data-scene aria-hidden="true"><div className="kinetic-track">KẾT NỐI <i><SymbolIcon glyph="✳" /></i> NGHIÊN CỨU <i><SymbolIcon glyph="✳" /></i> CỘNG HƯỞNG <i><SymbolIcon glyph="✳" /></i> KẾT NỐI <i><SymbolIcon glyph="✳" /></i> NGHIÊN CỨU <i><SymbolIcon glyph="✳" /></i> CỘNG HƯỞNG <i><SymbolIcon glyph="✳" /></i></div></div>
 
         <section className="intro section-pad" id="mang-luoi">
           <div className="section-kicker" data-reveal><span>01</span><i /> VỀ MẠNG LƯỚI<span className="kicker-end">NHỮNG KẾT NỐI CÓ Ý NGHĨA ↗</span></div>
@@ -190,7 +191,7 @@ export default function App() {
           </div>
           <div className="pillar-grid">
             {pillars.map((item, index) => <article className="pillar" data-reveal style={{ '--reveal-delay': `${index * 100}ms` } as CSSProperties} key={item.number}>
-              <div className="pillar-top"><span>{item.number}</span><span className="pillar-icon">{item.icon}</span></div>
+              <div className="pillar-top"><span>{item.number}</span><span className="pillar-icon"><SymbolIcon glyph={item.icon} /></span></div>
               <h3>{item.title}</h3><p>{item.text}</p>
             </article>)}
           </div>
@@ -201,7 +202,7 @@ export default function App() {
           <div className="statement-inner">
             <p className="eyebrow"><span className="eyebrow-rule" /> CỘNG ĐỒNG · TRI THỨC · TƯƠNG LAI</p>
             <p className="statement-line">{['Từ những ý tưởng', 'riêng lẻ đến một', 'cộng đồng cùng tiến.'].map((line, index) => <span className={`statement-fragment fragment-${index}`} key={line} style={{ '--line-index': index } as CSSProperties}>{line}</span>)}</p>
-            <div className="statement-aside"><span className="statement-star">✳</span><p>Nơi hành trình nghiên cứu của mỗi CLB có thêm những người đồng hành.</p></div>
+            <div className="statement-aside"><span className="statement-star"><SymbolIcon glyph="✳" /></span><p>Nơi hành trình nghiên cứu của mỗi CLB có thêm những người đồng hành.</p></div>
             <div className="statement-context"><span>KHÔNG CHỈ LÀ GẶP GỠ</span><p>Là chia sẻ cách làm, lắng nghe góc nhìn khác và cùng nuôi dưỡng tinh thần nghiên cứu dài hạn.</p></div>
           </div>
           <div className="statement-photos" aria-hidden="true">
@@ -211,7 +212,7 @@ export default function App() {
           </div>
           <div className="statement-ring ring-one" /><div className="statement-ring ring-two" />
           <span className="statement-label">SVNCKH-NET / 2026</span>
-          <span className="statement-large-star" aria-hidden="true">✳</span>
+          <span className="statement-large-star" aria-hidden="true"><SymbolIcon glyph="✳" /></span>
         </section>
         </div>
 
@@ -224,7 +225,7 @@ export default function App() {
         </div>
 
         <section className="connection-story section-pad" data-scene>
-          <div className="section-kicker" data-reveal><span>↗</span><i /> TỪ KẾT NỐI ĐẾN ĐỒNG HÀNH</div>
+          <div className="section-kicker" data-reveal><span><SymbolIcon glyph="↗" /></span><i /> TỪ KẾT NỐI ĐẾN ĐỒNG HÀNH</div>
           <div className="connection-story-layout">
             <div className="connection-story-heading"><span className="story-overline">MỖI CLB MỘT THẾ MẠNH</span><h2>Nhiều góc nhìn.<br /><em>Chung một<br />tinh thần.</em></h2><p>Không cần có cùng điểm xuất phát để có thể đồng hành trên hành trình nghiên cứu.</p></div>
             <div className="story-moments">
@@ -255,7 +256,7 @@ export default function App() {
           <div className="section-kicker"><span>04</span><i /> THÔNG TIN CẦN BIẾT</div>
           <div className="faq-layout"><h2 data-reveal>Một vài<br /><em>điều thường hỏi.</em></h2><div className="faq-list" data-reveal>
             {faqs.map((item, index) => <article className={`faq-item ${openFaq === index ? 'open' : ''}`} key={item.q}>
-              <button onClick={() => setOpenFaq(openFaq === index ? null : index)} aria-expanded={openFaq === index} aria-controls={`faq-answer-${index}`} id={`faq-question-${index}`}><span>{item.q}</span><b aria-hidden="true">{openFaq === index ? '−' : '+'}</b></button>
+              <button type="button" onClick={() => setOpenFaq(openFaq === index ? null : index)} aria-expanded={openFaq === index} aria-controls={`faq-answer-${index}`} id={`faq-question-${index}`}><span>{item.q}</span><b aria-hidden="true"><SymbolIcon glyph={openFaq === index ? '−' : '+'} /></b></button>
               <div className="faq-answer" id={`faq-answer-${index}`} role="region" aria-labelledby={`faq-question-${index}`} aria-hidden={openFaq !== index}><div><p>{item.a}</p></div></div>
             </article>)}
           </div></div>
@@ -266,7 +267,7 @@ export default function App() {
           <p className="eyebrow"><span className="eyebrow-rule" /> MỖI KẾT NỐI ĐỀU MỞ RA MỘT HƯỚNG ĐI</p>
           <h2 data-reveal>Cùng đưa nghiên cứu<br /><em>trẻ tiến xa hơn.</em></h2>
           <a className="button button-dark" href="#tham-gia">Tìm hiểu về Mạng lưới <Arrow diagonal /></a>
-          <span className="closing-star">✳</span>
+          <span className="closing-star"><SymbolIcon glyph="✳" /></span>
         </section>
       </main>
 
