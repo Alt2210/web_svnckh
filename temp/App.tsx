@@ -135,7 +135,6 @@ function NetworkArtwork() {
       <span className="art-dot dot-f"><i><SymbolIcon glyph="+" /></i></span>
       <span className="art-caption caption-top">KẾT NỐI TRI THỨC</span>
       <span className="art-caption caption-bottom">TỪNG CLB · CHUNG MỘT MẠNG LƯỚI</span>
-      <div className="art-note"><span className="live-dot" /> Mạng lưới mở rộng từ những kết nối đầu tiên</div>
     </div>
   );
 }
@@ -199,7 +198,7 @@ export default function App() {
         <section className="intro section-pad" id="mang-luoi">
           <div className="section-kicker" data-reveal><span>01</span><i /> VỀ MẠNG LƯỚI<span className="kicker-end">NHỮNG KẾT NỐI CÓ Ý NGHĨA ↗</span></div>
           <div className="intro-grid">
-            <h2 data-reveal>Nghiên cứu tốt hơn<br />khi <em>không đi một mình.</em></h2>
+            <h2 data-reveal>Nghiên cứu tốt hơn khi<br /><em>không đi một mình.</em></h2>
             <div className="intro-body" data-reveal>
               <p className="intro-lead">Mạng lưới CLB Sinh viên Nghiên cứu Khoa học Toàn quốc kết nối các tổ chức sinh viên cùng quan tâm đến nghiên cứu, sáng tạo và học hỏi.</p>
               <p>Thông qua một không gian thông tin chung, các CLB có thể giới thiệu hoạt động, tìm kiếm kết nối và tham gia các chương trình của Mạng lưới. Mỗi kết nối mới góp phần làm cộng đồng nghiên cứu trẻ thêm vững vàng.</p>
