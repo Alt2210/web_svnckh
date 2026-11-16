@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useScrollMotion } from './useScrollMotion';
 import { ActivityCarousel } from './ActivityCarousel';
 import { SymbolIcon } from './SymbolIcon';
+import { SubmissionNotice } from './SubmissionNotice';
 
 const navItems = [
   ['Mạng lưới', '#mang-luoi'],
@@ -120,8 +121,6 @@ function NetworkArtwork() {
       <div className="art-orbit orbit-two" />
       <div className="art-orbit orbit-three" />
       <div className="art-scan" aria-hidden="true" />
-      <div className="art-cross cross-one" aria-hidden="true"><SymbolIcon glyph="+" /></div>
-      <div className="art-cross cross-two" aria-hidden="true"><SymbolIcon glyph="+" /></div>
       <svg className="art-lines" viewBox="0 0 560 560" fill="none" aria-hidden="true">
         <path d="M278 278 120 146M278 278 428 130M278 278 463 310M278 278 385 455M278 278 124 408M278 278 218 78M278 278 282 490" />
         <path d="M120 146 218 78M428 130 463 310M124 408 282 490" className="line-soft" />
@@ -133,8 +132,6 @@ function NetworkArtwork() {
       <span className="art-dot dot-d"><i>CỘNG<br />HƯỞNG</i></span>
       <span className="art-dot dot-e"><i>LAN<br />TỎA</i></span>
       <span className="art-dot dot-f"><i><SymbolIcon glyph="+" /></i></span>
-      <span className="art-caption caption-top">KẾT NỐI TRI THỨC</span>
-      <span className="art-caption caption-bottom">TỪNG CLB · CHUNG MỘT MẠNG LƯỚI</span>
     </div>
   );
 }
@@ -143,6 +140,7 @@ export default function App() {
   const pageRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [submissionOpen, setSubmissionOpen] = useState(false);
   useScrollMotion(pageRef);
 
   useEffect(() => {
@@ -183,22 +181,19 @@ export default function App() {
               <a className="button button-yellow" href="#mang-luoi">Khám phá Mạng lưới <Arrow diagonal /></a>
               <a className="text-link" href="#tham-gia">Dành cho CLB <Arrow /></a>
             </div>
-            <div className="hero-footnote"><span className="footnote-mark"><SymbolIcon glyph="✳" /></span><span>Kết nối câu lạc bộ<br />Lan tỏa tinh thần nghiên cứu</span></div>
           </div>
           <NetworkArtwork />
           <div className="hero-scene-copy" data-hero-panel="1"><span className="scene-label">02 / CỘNG ĐỒNG CÙNG TIẾN</span><h2>Đến vô vàn<br /><em>khả năng.</em></h2><p>Mỗi câu lạc bộ là một điểm sáng. Khi kết nối, những trải nghiệm riêng trở thành nguồn cảm hứng chung.</p><ul className="hero-facts"><li><b>Kết nối liên trường</b><span>Gặp gỡ những CLB có chung mối quan tâm.</span></li><li><b>Chia sẻ để phát triển</b><span>Cùng trao đổi kinh nghiệm và cách làm nghiên cứu.</span></li></ul></div>
           <div className="hero-scene-copy hero-scene-third" data-hero-panel="2"><span className="scene-label">03 / BẮT ĐẦU HÀNH TRÌNH</span><h2>Một hồ sơ.<br /><em>Một khởi đầu.</em></h2><p>Tìm hiểu Mạng lưới, chuẩn bị thông tin câu lạc bộ và theo dõi đợt tiếp nhận phù hợp.</p><ul className="hero-checklist"><li>Hồ sơ tổ chức và người đại diện</li><li>Minh chứng hoạt động nghiên cứu</li><li>Thẩm định và công nhận theo quy trình</li></ul><a className="button button-yellow" href="#tham-gia">Khám phá cách tham gia <Arrow diagonal /></a></div>
-          <div className="hero-chapters" aria-label="Ba chặng giới thiệu"><span className="hero-chapter chapter-0"><b>01</b>KẾT NỐI</span><span className="hero-chapter chapter-1"><b>02</b>CỘNG HƯỞNG</span><span className="hero-chapter chapter-2"><b>03</b>KHỞI ĐẦU</span></div>
-          <div className="hero-index"><a href="#mang-luoi" className="scroll-cue"><span className="scroll-cue-line" />CUỘN ĐỂ KHÁM PHÁ <SymbolIcon glyph="↓" /></a><span>SVNCKH / KẾT NỐI KHÔNG GIỚI HẠN</span></div>
         </section>
         </div>
 
         <div className="kinetic-band" data-scene aria-hidden="true"><div className="kinetic-track">KẾT NỐI <i><SymbolIcon glyph="✳" /></i> NGHIÊN CỨU <i><SymbolIcon glyph="✳" /></i> CỘNG HƯỞNG <i><SymbolIcon glyph="✳" /></i> KẾT NỐI <i><SymbolIcon glyph="✳" /></i> NGHIÊN CỨU <i><SymbolIcon glyph="✳" /></i> CỘNG HƯỞNG <i><SymbolIcon glyph="✳" /></i></div></div>
 
         <section className="intro section-pad" id="mang-luoi">
-          <div className="section-kicker" data-reveal><span>01</span><i /> VỀ MẠNG LƯỚI<span className="kicker-end">NHỮNG KẾT NỐI CÓ Ý NGHĨA ↗</span></div>
+          <div className="section-kicker" data-reveal><span>01</span><i /> VỀ MẠNG LƯỚI</div>
           <div className="intro-grid">
-            <h2 data-reveal>Nghiên cứu tốt hơn khi<br /><em>không đi một mình.</em></h2>
+            <h2 className="intro-heading" data-reveal><span className="heading-line">Nghiên cứu tốt hơn</span><em className="heading-line"><span className="word-group">khi không</span>{' '}<span className="word-group">đi một mình.</span></em></h2>
             <div className="intro-body" data-reveal>
               <p className="intro-lead">Mạng lưới CLB Sinh viên Nghiên cứu Khoa học Toàn quốc kết nối các tổ chức sinh viên cùng quan tâm đến nghiên cứu, sáng tạo và học hỏi.</p>
               <p>Thông qua một không gian thông tin chung, các CLB có thể giới thiệu hoạt động, tìm kiếm kết nối và tham gia các chương trình của Mạng lưới. Mỗi kết nối mới góp phần làm cộng đồng nghiên cứu trẻ thêm vững vàng.</p>
@@ -227,14 +222,13 @@ export default function App() {
             </figure>)}
           </div>
           <div className="statement-ring ring-one" /><div className="statement-ring ring-two" />
-          <span className="statement-label">SVNCKH-NET / 2026</span>
           <span className="statement-large-star" aria-hidden="true"><SymbolIcon glyph="✳" /></span>
         </section>
         </div>
 
         <div className="activities-track">
         <section className="activities section-pad" id="hoat-dong">
-          <div className="section-kicker"><span>02</span><i /> CÙNG NHAU HOẠT ĐỘNG<span className="kicker-end">KHÁM PHÁ THEO CHIỀU NGANG ↔</span></div>
+          <div className="section-kicker"><span>02</span><i /> CÙNG NHAU HOẠT ĐỘNG</div>
           <div className="activities-heading"><h2>Một mạng lưới.<br /><em>Nhiều khả năng.</em></h2><p>Kết nối là điểm bắt đầu. Từ đó, các CLB cùng chia sẻ thông tin, khám phá cơ hội và tham gia những hoạt động chung.</p></div>
           <ActivityCarousel items={activities} />
         </section>
@@ -265,7 +259,7 @@ export default function App() {
             </article>)}
           </div>
           <div className="join-preparation" data-reveal><div><span className="scene-label">CHUẨN BỊ TRƯỚC KHI BẮT ĐẦU</span><h3>Một hồ sơ rõ ràng.<br />Một hành trình thuận lợi hơn.</h3></div><ul><li><b>Thông tin tổ chức</b><span>Tên CLB, đơn vị chủ quản, lĩnh vực và người đại diện.</span></li><li><b>Dấu ấn hoạt động</b><span>Giới thiệu cơ cấu, hoạt động và minh chứng liên quan.</span></li><li><b>Theo dõi hướng dẫn</b><span>Thành phần hồ sơ và thời hạn được thông báo theo từng đợt.</span></li></ul></div>
-          <div className="join-bottom"><p>Trước khi nộp, hãy xem kỹ thông báo về điều kiện, thành phần hồ sơ và thời gian tiếp nhận.</p><a className="button button-yellow" href="#faq">Xem thông tin cần biết <Arrow diagonal /></a></div>
+          <div className="join-bottom"><p>Trước khi nộp, hãy xem kỹ thông báo về điều kiện, thành phần hồ sơ và thời gian tiếp nhận.</p><div className="join-actions"><button type="button" className="button button-yellow" onClick={() => setSubmissionOpen(true)}>Nộp hồ sơ <Arrow diagonal /></button><a className="button button-outline" href="#faq">Thông tin cần biết <Arrow diagonal /></a></div></div>
         </section>
 
         <section className="faq section-pad" id="faq">
@@ -296,6 +290,7 @@ export default function App() {
         </div>
         <div className="footer-bottom"><span>© SVNCKH-NET</span><span>Mạng lưới CLB Sinh viên Nghiên cứu Khoa học Toàn quốc</span><a href="#top">Lên đầu trang ↑</a></div>
       </footer>
+      <SubmissionNotice open={submissionOpen} onClose={() => setSubmissionOpen(false)} />
     </div>
   );
 }

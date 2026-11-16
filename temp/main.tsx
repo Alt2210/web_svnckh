@@ -4,6 +4,7 @@ import App from './App';
 import './styles.css';
 import './motion.css';
 import './mobile.css';
+import './refinements.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
