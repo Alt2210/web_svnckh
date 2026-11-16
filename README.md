@@ -72,3 +72,7 @@ Các nhóm chức năng hiện tại gồm tài khoản/MFA, hồ sơ cá nhân,
 `npm test` chạy kiểm tra kiến trúc, test frontend và 18 test backend trong PostgreSQL bộ nhớ (PGlite). Các test không sửa Supabase thật. Build và test không thay thế UAT trên trình duyệt, SMTP, Storage HTTP hoặc thiết bị thật.
 
 Xem [kiến trúc](docs/ARCHITECTURE.md), [frontend](frontend/README.md), [backend](backend/README.md) và [thiết lập Supabase](docs/SUPABASE_SETUP.md).
+
+## Tạm bỏ MFA cho admin
+
+Migration `backend/supabase/migrations/202611160004_admin_password_only.sql` cho phép vai trò admin dùng phiên mật khẩu (`aal1`). Admin không còn màn nhập mã TOTP trong giao diện hiện hành. Vẫn kiểm tra vai trò thực tế, email đã xác minh, tài khoản active và cấm tự duyệt hồ sơ. Reviewer/approver riêng vẫn cần MFA. Không xóa factor đã liên kết; muốn bật lại yêu cầu MFA cho admin, tạo migration khôi phục điều kiện aal2 và bổ sung lại giao diện xác thực. Không chạy lại migration 004 đã áp dụng.

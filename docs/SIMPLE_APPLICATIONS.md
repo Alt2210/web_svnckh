@@ -23,3 +23,7 @@ Không xóa hoặc ghi lại lịch sử hồ sơ hiện tại. Đợt mặc đ�
 `npm test`, `npm run typecheck`, `npm run build:pages` từ `main`. Bốn test mới kiểm tra nộp đơn giản, quyền/MFA/cấm tự duyệt, quyết định, snapshot và bổ sung hồ sơ của đợt cũ. Các test chạy trên PGlite, không ghi dữ liệu thật.
 
 Chỉ triển khai frontend sau khi migration 003 được áp dụng. Chưa kiểm thử thao tác trình duyệt/điện thoại thật; cần thử đăng nhập vào trang hồ sơ CLB, tải PDF, gửi lại và duyệt trên môi trường thật sau migration.
+
+## Tạm bỏ MFA cho admin
+
+Migration `backend/supabase/migrations/202611160004_admin_password_only.sql` cho phép vai trò admin dùng phiên mật khẩu (`aal1`). Admin không còn màn nhập mã TOTP trong giao diện hiện hành. Vẫn kiểm tra vai trò thực tế, email đã xác minh, tài khoản active và cấm tự duyệt hồ sơ. Reviewer/approver riêng vẫn cần MFA. Không xóa factor đã liên kết; muốn bật lại yêu cầu MFA cho admin, tạo migration khôi phục điều kiện aal2 và bổ sung lại giao diện xác thực. Không chạy lại migration 004 đã áp dụng.

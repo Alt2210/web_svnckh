@@ -85,3 +85,7 @@ Người dùng đã cho phép triển khai bản demo lên GitHub Pages. Reposit
 ## Sau refactor cấu trúc
 
 Mã React ở `frontend/`, migration và kiểm thử database ở `backend/`. Các lệnh npm vẫn chạy từ `main`; không chạy lại migration đã áp dụng. Cấu trúc mới được triển khai từ `main`, không thay đổi schema hoặc dữ liệu Supabase. Xem `docs/ARCHITECTURE.md`.
+
+## Tạm bỏ MFA cho admin
+
+Migration `backend/supabase/migrations/202611160004_admin_password_only.sql` cho phép vai trò admin dùng phiên mật khẩu (`aal1`). Admin không còn màn nhập mã TOTP trong giao diện hiện hành. Vẫn kiểm tra vai trò thực tế, email đã xác minh, tài khoản active và cấm tự duyệt hồ sơ. Reviewer/approver riêng vẫn cần MFA. Không xóa factor đã liên kết; muốn bật lại yêu cầu MFA cho admin, tạo migration khôi phục điều kiện aal2 và bổ sung lại giao diện xác thực. Không chạy lại migration 004 đã áp dụng.

@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { PortalLayout, Notice, EmptyState } from '../components/PortalLayout';
 import { StatusBadge } from '../components/StatusBadge';
@@ -6,23 +6,13 @@ import { ApplicationHistory } from '../features/applications/ApplicationHistory'
 import { useAsyncData } from '../hooks/useAsyncData';
 import { listApplications, reviewClubApplication } from '../services/admin.service';
 import { loadClubDetails, clubDocumentUrl } from '../services/clubs.service';
-import { verifiedTotpFactor, enrollTotp, verifyTotp } from '../services/auth.service';
 import { readableError } from '../lib/errors';
 import { dateLabel, type Application } from '../types/domain';
 
 export default function ApplicationAdminPage() {
   const auth = useAuth();
   if (!auth.roles.includes('admin')) return <PortalLayout title="Quản lý hồ sơ"><Notice tone="error">Khu vực này dành cho admin.</Notice></PortalLayout>;
-  return auth.aal2 ? <ApplicationWorkspace /> : <AdminVerification />;
-}
-
-function AdminVerification() {
-  const auth = useAuth();
-  const [factor, setFactor] = useState(''), [qr, setQr] = useState(''), [busy, setBusy] = useState(false), [error, setError] = useState(''), [loading, setLoading] = useState(true);
-  useEffect(() => { let alive = true; void verifiedTotpFactor().then((id) => { if (alive) setFactor(id); }).catch((err) => { if (alive) setError(readableError(err)); }).finally(() => { if (alive) setLoading(false); }); return () => { alive = false; }; }, []);
-  async function enroll() { setBusy(true); setError(''); try { const result = await enrollTotp(); setFactor(result.id); setQr(result.totp.qr_code.startsWith('data:') ? result.totp.qr_code : `data:image/svg+xml;charset=utf-8,${encodeURIComponent(result.totp.qr_code)}`); } catch (err) { setError(readableError(err)); } finally { setBusy(false); } }
-  async function verify(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const code = String(new FormData(event.currentTarget).get('code')); setBusy(true); setError(''); try { await verifyTotp(factor, code); await auth.refresh(); } catch (err) { setError(readableError(err)); } finally { setBusy(false); } }
-  return <PortalLayout title="Xác thực quản trị"><section className="p-card form-card"><p>Xác thực hai bước để xem và xử lý hồ sơ.</p>{error && <Notice tone="error">{error}</Notice>}{loading ? <p role="status">Đang kiểm tra bảo mật…</p> : factor ? <>{qr && <><p>Quét mã bằng ứng dụng xác thực của bạn.</p><img className="mfa-qr" src={qr} alt="Mã thiết lập xác thực hai bước" /></>}<form className="p-form" onSubmit={(event) => { void verify(event); }}><label>Mã xác thực<input name="code" required pattern="[0-9]{6}" inputMode="numeric" autoComplete="one-time-code" maxLength={6} /></label><button className="p-btn" disabled={busy}>Xác thực</button></form></> : <button className="p-btn" disabled={busy} onClick={() => { void enroll(); }}>Thiết lập xác thực hai bước</button>}</section></PortalLayout>;
+  return <ApplicationWorkspace />;
 }
 
 function ApplicationWorkspace() {

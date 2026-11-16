@@ -82,3 +82,23 @@ test('old round applications can be revised from the simplified popup without mo
   await rpc('owner','submit_club_basic',[id]);
   assert.equal((await user('owner','select round_id from public.applications where id=$1',[app])).rows[0].round_id,round);
 });
+
+test('temporary password-only admin policy preserves assigned roles, verification, account status and independent approval',async()=>{
+  await db.exec(await readFile(new URL('../supabase/migrations/202611160004_admin_password_only.sql',import.meta.url),'utf8'));
+  assert.equal((await user('admin',"select private.has_role('admin') as allowed")).rows[0].allowed,true);
+  assert.equal((await user('other',"select private.has_role('admin') as allowed")).rows[0].allowed,false);
+  await db.query("insert into public.access_roles values($1,'reviewer')",[ids.other]);
+  assert.equal((await user('other',"select private.has_role('reviewer') as allowed")).rows[0].allowed,false);
+  assert.equal((await user('other',"select private.has_role('reviewer') as allowed",[],'aal2')).rows[0].allowed,true);
+  await db.query("insert into public.access_roles values($1,'admin')",[ids.unverified]);
+  assert.equal((await user('unverified',"select private.has_role('admin') as allowed")).rows[0].allowed,false);
+  const id=await draft('owner','CLB Admin duyệt bằng mật khẩu');
+  const app=(await rpc('owner','submit_club_basic',[id])).rows[0].value;
+  const args=[app,'approved','Hồ sơ đáp ứng điều kiện xét duyệt.',null,'QD-PASSWORD',new Date().toISOString().slice(0,10)];
+  await assert.rejects(()=>rpc('other','admin_review_club_application',args),/quyền admin/);
+  await rpc('admin','admin_review_club_application',args);
+  assert.equal((await user('owner','select membership from public.clubs where id=$1',[id])).rows[0].membership,'recognized');
+  await db.query("update public.profiles set status='locked' where id=$1",[ids.admin]);
+  assert.equal((await user('admin',"select private.has_role('admin') as allowed")).rows[0].allowed,false);
+  await assert.rejects(()=>rpc('admin','admin_review_club_application',args),/quyền admin/);
+});
