@@ -2,9 +2,9 @@
 
 ## Luồng sử dụng
 
-- Một màn đăng nhập chung. Người dùng trở lại landing; admin vào quản lý hồ sơ.
-- Nút **Nộp hồ sơ CLB / Hồ sơ CLB** mở dialog ngay trên landing. Có lưu nháp, PDF riêng tư, gửi, xem kết quả và bổ sung/gửi lại.
-- Link CLB cũ chuyển về popup; không còn trang tài khoản, hồ sơ cá nhân hoặc trang tạo CLB riêng trong điều hướng.
+- Một màn đăng nhập chung. Người dùng vào trang hồ sơ CLB; admin vào quản lý hồ sơ.
+- Nút **Nộp hồ sơ CLB / Hồ sơ CLB** dẫn đến một trang riêng `/#/clb`. Tạo, chỉnh sửa và theo dõi kết quả cùng nằm trên trang này. Có lưu nháp, PDF riêng tư, gửi, xem kết quả và bổ sung/gửi lại.
+- Link popup cũ chuyển về trang hồ sơ; không còn trang tài khoản, hồ sơ cá nhân hoặc trang tạo CLB riêng trong điều hướng.
 - Admin chỉ còn một trang quản lý/duyệt hồ sơ, có tìm kiếm, lọc trạng thái, chi tiết/minh chứng và lịch sử. TOTP được xác thực ngay trong khu vực này.
 - Các trang hoạt động và quản lý/đăng hoạt động được ngắt khỏi router; source, SQL và dữ liệu được giữ. Phần giới thiệu hoạt động tĩnh trên landing vẫn còn, không dẫn tới danh sách động.
 
@@ -22,4 +22,4 @@ Không xóa hoặc ghi lại lịch sử hồ sơ hiện tại. Đợt mặc đ�
 
 `npm test`, `npm run typecheck`, `npm run build:pages` từ `main`. Bốn test mới kiểm tra nộp đơn giản, quyền/MFA/cấm tự duyệt, quyết định, snapshot và bổ sung hồ sơ của đợt cũ. Các test chạy trên PGlite, không ghi dữ liệu thật.
 
-Chỉ triển khai frontend sau khi migration 003 được áp dụng. Chưa kiểm thử thao tác trình duyệt/điện thoại thật; cần thử mở/đóng popup, đăng nhập trở lại landing, tải PDF, gửi lại và duyệt trên môi trường thật sau migration.
+Chỉ triển khai frontend sau khi migration 003 được áp dụng. Chưa kiểm thử thao tác trình duyệt/điện thoại thật; cần thử đăng nhập vào trang hồ sơ CLB, tải PDF, gửi lại và duyệt trên môi trường thật sau migration.

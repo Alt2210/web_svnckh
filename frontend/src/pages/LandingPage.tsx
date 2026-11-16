@@ -1,11 +1,10 @@
-import { lazy, Suspense, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useScrollMotion } from '../features/landing/useScrollMotion';
 import { ActivityCarousel } from '../features/landing/ActivityCarousel';
 import { SymbolIcon } from '../features/landing/SymbolIcon';
 import { useAuth } from '../contexts/AuthContext';
-import { navigate, useRoute } from '../lib/navigation';
+import { navigate } from '../lib/navigation';
 import { readableError } from '../lib/errors';
-const ClubApplicationDialog = lazy(() => import('../features/applications/ClubApplicationDialog'));
 
 const navItems = [
   ['Mạng lưới', '#mang-luoi'],
@@ -142,10 +141,8 @@ function NetworkArtwork() {
 export default function LandingPage() {
   const auth = useAuth();
   const { session } = auth;
-  const route = useRoute();
-  const applicationOpen = new URLSearchParams(route.split('?')[1] || '').get('ho-so') === 'clb';
   const [accountError, setAccountError] = useState('');
-  const openApplication = () => { setMenuOpen(false); navigate('/?ho-so=clb'); };
+  const openApplication = () => { setMenuOpen(false); navigate('/clb'); };
   const pageRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -301,7 +298,6 @@ export default function LandingPage() {
         <div className="footer-bottom"><span>© SVNCKH-NET</span><span>Mạng lưới CLB Sinh viên Nghiên cứu Khoa học Toàn quốc</span><a href="#top">Lên đầu trang ↑</a></div>
       </footer>
       {accountError && <div className="auth-callback-notice" role="alert"><p>{accountError}</p><button onClick={() => setAccountError('')} aria-label="Đóng thông báo">×</button></div>}
-      {applicationOpen && <Suspense fallback={null}><ClubApplicationDialog onClose={() => navigate('/', true)} /></Suspense>}
     </div>
   );
 }

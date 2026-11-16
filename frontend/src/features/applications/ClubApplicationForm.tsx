@@ -32,7 +32,7 @@ export function ClubApplicationForm({ initialId, onBack }: { initialId?: string;
       setId(savedId);
       if (attachment) await uploadClubDocument(auth.session!.user.id, savedId, attachment);
       if (send) await submitClubBasic(savedId);
-      setMessage(send ? 'Đã gửi hồ sơ. Bạn có thể mở lại popup này để theo dõi kết quả và phản hồi của admin.' : 'Đã lưu nháp. Bạn có thể mở lại để hoàn thiện và gửi sau.');
+      setMessage(send ? 'Đã gửi hồ sơ. Bạn có thể mở lại trang hồ sơ để theo dõi kết quả và phản hồi của admin.' : 'Đã lưu nháp. Bạn có thể mở lại để hoàn thiện và gửi sau.');
       query.reload();
     } catch (err) { setError(readableError(err)); } finally { setBusy(false); }
   }

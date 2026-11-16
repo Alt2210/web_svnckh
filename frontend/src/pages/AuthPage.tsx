@@ -24,7 +24,7 @@ export default function AuthPage({ mode }: { mode: Mode }) {
   const [email, setEmail] = useState('');
   const [title, description, button] = content[mode];
   useEffect(() => {
-    if (auth.session && !auth.loading && ['login', 'register'].includes(mode)) navigate(nextClub ? '/?ho-so=clb' : auth.roles.includes('admin') ? '/admin/ho-so' : '/', true);
+    if (auth.session && !auth.loading && ['login', 'register'].includes(mode)) navigate(nextClub ? '/clb' : auth.roles.includes('admin') ? '/admin/ho-so' : '/clb', true);
   }, [auth.session, auth.loading, auth.roles, mode, nextClub]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {

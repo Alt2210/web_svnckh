@@ -5,10 +5,10 @@ import { isConfigured, resendConfirmation } from '../services/auth.service';
 import { readableError } from '../lib/errors';
 import { Notice, PortalLayout } from './PortalLayout';
 
-export function ProtectedRoute({ children, staff = false, admin = false }: { children: ReactNode; staff?: boolean; admin?: boolean }) {
+export function ProtectedRoute({ children, staff = false, admin = false, loginPath = '/dang-nhap' }: { children: ReactNode; staff?: boolean; admin?: boolean; loginPath?: string }) {
   const auth = useAuth();
   const [message, setMessage] = useState('');
-  useEffect(() => { if (isConfigured && !auth.loading && !auth.session) navigate('/dang-nhap', true); }, [auth.loading, auth.session]);
+  useEffect(() => { if (isConfigured && !auth.loading && !auth.session) navigate(loginPath, true); }, [auth.loading, auth.session, loginPath]);
   if (!isConfigured) return <Unavailable />;
   if (auth.loading) return <div className="portal-loading" role="status">Đang tải tài khoản…</div>;
   if (!auth.session) return null;
