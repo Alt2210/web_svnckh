@@ -1,6 +1,6 @@
 # SVNCKH-NET
 
-Bản rút gọn đang được chuẩn bị trên `feat/simple-club-applications`: hồ sơ CLB trong popup trên landing và một trang admin duyệt/quản lý hồ sơ. Các màn hoạt động được giữ code nhưng ngắt kết nối. Cần áp dụng migration 003 trước khi triển khai frontend này; xem [luồng hồ sơ rút gọn](docs/SIMPLE_APPLICATIONS.md).
+Bản rút gọn tập trung hồ sơ CLB trong popup trên landing và một trang admin duyệt/quản lý hồ sơ. Các màn hoạt động được giữ code nhưng ngắt kết nối. Migration 003 đã được người dùng áp dụng và kiểm tra qua API; không chạy lại. Xem [luồng hồ sơ rút gọn](docs/SIMPLE_APPLICATIONS.md).
 
 React + TypeScript nằm trong `frontend/`; backend Supabase (Auth, PostgreSQL RPC/RLS, Storage) nằm trong `backend/`. Dự án dùng npm workspaces với một lockfile tại `main`.
 

@@ -1,6 +1,6 @@
 # Bản rút gọn: hồ sơ câu lạc bộ
 
-## Luồng đang chuẩn bị
+## Luồng sử dụng
 
 - Một màn đăng nhập chung. Người dùng trở lại landing; admin vào quản lý hồ sơ.
 - Nút **Nộp hồ sơ CLB / Hồ sơ CLB** mở dialog ngay trên landing. Có lưu nháp, PDF riêng tư, gửi, xem kết quả và bổ sung/gửi lại.
@@ -10,7 +10,7 @@
 
 ## Kích hoạt database
 
-Chạy **một lần** `backend/supabase/migrations/202611160003_simple_applications.sql` sau 001 và 002. Không chạy lại các migration trước.
+Migration `backend/supabase/migrations/202611160003_simple_applications.sql` đã được người dùng chạy và kiểm tra qua API: đợt mặc định đang mở, hai RPC mới tồn tại và từ chối lời gọi không có phiên người dùng hợp lệ. Không chạy lại 001, 002 hoặc 003.
 
 Migration thêm đợt tiếp nhận mặc định dài hạn để bỏ bước chọn đợt trên UI. `submit_club_basic` vẫn gọi luồng nộp hiện có: email đã xác minh, quyền sở hữu, CLB đang hoạt động, PDF, snapshot, chống nộp trùng và hạn bổ sung. Hồ sơ của đợt cũ được gửi lại trong đúng đợt cũ; hồ sơ từ chối/đã duyệt không tự mở lại.
 
