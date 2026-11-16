@@ -37,7 +37,7 @@ Di chuyển query sang service không biến chúng thành mã backend. Trình d
 - Giữ tài nguyên công khai, CSS, carousel và scroll motion hiện tại.
 - Vite tiếp tục đọc `.env.local` ở gốc với prefix `VITE_`; secret key không vào bundle.
 - Không thêm migration, không chạy DDL/DML, không đổi cấu hình Supabase.
-- Nhánh refactor chưa push/merge. Workflow deploy vẫn chỉ theo dõi `main`.
+- Workflow deploy chỉ theo dõi `main` và lấy artifact từ `frontend/dist-pages/`.
 
 ## Kiểm tra
 

@@ -2,7 +2,7 @@
 
 React + TypeScript nằm trong `frontend/`; backend Supabase (Auth, PostgreSQL RPC/RLS, Storage) nằm trong `backend/`. Dự án dùng npm workspaces với một lockfile tại `main`.
 
-Refactor nằm trên nhánh `refactor/frontend-backend-separation`, chưa push, chưa merge và không sửa project Supabase. Bản demo hiện tại tiếp tục chạy tại https://alt2210.github.io/web_svnckh/.
+Cấu trúc frontend/backend đã được tích hợp để triển khai từ `main`. Không cần chạy lại migration hoặc thay đổi project Supabase. Bản demo: https://alt2210.github.io/web_svnckh/.
 
 ## Cấu trúc
 

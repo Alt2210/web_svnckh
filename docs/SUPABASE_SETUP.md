@@ -84,4 +84,4 @@ Người dùng đã cho phép triển khai bản demo lên GitHub Pages. Reposit
 
 ## Sau refactor cấu trúc
 
-Mã React ở `frontend/`, migration và kiểm thử database ở `backend/`. Các lệnh npm vẫn chạy từ `main`; không chạy lại migration đã áp dụng. Nhánh `refactor/frontend-backend-separation` chỉ nằm cục bộ, chưa merge/push và không thay đổi database hoặc website đang chạy. Xem `docs/ARCHITECTURE.md`.
+Mã React ở `frontend/`, migration và kiểm thử database ở `backend/`. Các lệnh npm vẫn chạy từ `main`; không chạy lại migration đã áp dụng. Cấu trúc mới được triển khai từ `main`, không thay đổi schema hoặc dữ liệu Supabase. Xem `docs/ARCHITECTURE.md`.
