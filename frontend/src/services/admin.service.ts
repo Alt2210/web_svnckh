@@ -34,6 +34,7 @@ export async function listApplications() {
 }
 export interface ReviewInput { status: string; note: string; deadline: string | null; document_no: string; effective_at: string | null }
 export const reviewApplication = (id: string, review: ReviewInput) => callRpc('review_application', { p_application: id, p_status: review.status, p_note: review.note, p_deadline: review.deadline, p_document_no: review.document_no, p_effective_at: review.effective_at });
+export const reviewClubApplication = (id: string, review: ReviewInput) => callRpc('admin_review_club_application', { p_application: id, p_status: review.status, p_note: review.note, p_deadline: review.deadline, p_document_no: review.document_no, p_effective_at: review.effective_at });
 export async function listAuditLogs() {
   const { data, error } = await database().from('audit_logs').select('*').order('created_at', { ascending: false }).limit(100);
   if (error) throw error;

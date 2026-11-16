@@ -9,7 +9,7 @@ import './styles/motion.css';
 import './styles/mobile.css';
 import './styles/refinements.css';
 import './styles/portal.css';
-import './styles/events.css';
+import './styles/applications.css';
 
 void initializeAuth();
 createRoot(document.getElementById('root')!).render(

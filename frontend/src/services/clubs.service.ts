@@ -25,6 +25,7 @@ export async function loadClubDetails(id?: string) {
 }
 export const saveClub = (id: string | undefined, club: ClubInput) => callRpc<string>('save_club', { p_id: id || null, p_payload: club });
 export const submitClub = (id: string, roundId: string) => callRpc('submit_club', { p_club: id, p_round: roundId });
+export const submitClubBasic = (id: string) => callRpc('submit_club_basic', { p_club: id });
 
 export async function uploadClubDocument(userId: string, clubId: string, file: File | null) {
   if (!file || !file.name.toLowerCase().endsWith('.pdf') || file.type !== 'application/pdf' || file.size > 10 * 1024 * 1024) throw new Error('Chỉ chấp nhận PDF có dung lượng tối đa 10 MB.');

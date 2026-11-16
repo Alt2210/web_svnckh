@@ -3,13 +3,12 @@ import { ArrowLeft, ArrowUpRight, Eye, EyeOff, ShieldCheck } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext';
 import { isConfigured, signUp, signIn, requestPasswordReset, updatePassword, signOutSession } from '../services/auth.service';
 import { readableError } from '../lib/errors';
-import { navigate } from '../lib/navigation';
+import { navigate, useRoute } from '../lib/navigation';
 import { Notice } from '../components/PortalLayout';
 
-type Mode = 'login' | 'register' | 'forgot' | 'reset' | 'admin';
+type Mode = 'login' | 'register' | 'forgot' | 'reset';
 const content: Record<Mode, [string, string, string]> = {
   login: ['Chào mừng trở lại.', 'Đăng nhập để quản lý hồ sơ và kết nối câu lạc bộ của bạn.', 'Đăng nhập'],
-  admin: ['Không gian quản trị.', 'Dành cho quản trị viên và cán bộ đã được phân quyền.', 'Đăng nhập quản trị'],
   register: ['Bắt đầu một kết nối mới.', 'Tạo tài khoản bằng email cá nhân. Bạn không cần sử dụng email của trường.', 'Tạo tài khoản'],
   forgot: ['Tìm lại kết nối.', 'Nhập email để nhận hướng dẫn đặt lại mật khẩu.', 'Gửi hướng dẫn'],
   reset: ['Đặt mật khẩu mới.', 'Sử dụng mật khẩu riêng cho tài khoản Mạng lưới của bạn.', 'Lưu mật khẩu mới'],
@@ -17,6 +16,7 @@ const content: Record<Mode, [string, string, string]> = {
 
 export default function AuthPage({ mode }: { mode: Mode }) {
   const auth = useAuth();
+  const nextClub = new URLSearchParams(useRoute().split('?')[1] || '').get('next') === 'clb';
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -24,8 +24,8 @@ export default function AuthPage({ mode }: { mode: Mode }) {
   const [email, setEmail] = useState('');
   const [title, description, button] = content[mode];
   useEffect(() => {
-    if (auth.session && !auth.loading && ['login', 'admin', 'register'].includes(mode)) navigate(mode === 'admin' ? '/admin/nguoi-dung' : '/tai-khoan', true);
-  }, [auth.session, auth.loading, mode]);
+    if (auth.session && !auth.loading && ['login', 'register'].includes(mode)) navigate(nextClub ? '/?ho-so=clb' : auth.roles.includes('admin') ? '/admin/ho-so' : '/', true);
+  }, [auth.session, auth.loading, auth.roles, mode, nextClub]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); setError(''); setMessage('');
@@ -53,7 +53,7 @@ export default function AuthPage({ mode }: { mode: Mode }) {
 
   return <div className="auth-page">
     <aside className="auth-story"><a className="auth-logo" href="#/"><img src={`${import.meta.env.BASE_URL}assets/logo-white.svg`} alt="" />SVNCKH-NET</a><div><span className="portal-eyebrow">KẾT NỐI TRI THỨC TRẺ</span><h2>Mỗi tài khoản.<br />Một khởi đầu<br /><em>nhiều khả năng.</em></h2><p>Cùng xây dựng một cộng đồng nghiên cứu sinh viên minh bạch, kết nối và không ngừng phát triển.</p></div><span className="auth-story-foot"><ShieldCheck size={18} />Hồ sơ riêng tư. Kết nối có trách nhiệm.</span></aside>
-    <main className="auth-panel"><a className="auth-back" href="#/"><ArrowLeft size={17} />Trang chủ</a><div className="auth-form-wrap"><span className="portal-eyebrow">{mode === 'admin' ? 'QUẢN TRỊ MẠNG LƯỚI' : 'TÀI KHOẢN MẠNG LƯỚI'}</span><h1>{title}</h1><p>{description}</p>
+    <main className="auth-panel"><a className="auth-back" href="#/"><ArrowLeft size={17} />Trang chủ</a><div className="auth-form-wrap"><span className="portal-eyebrow">TÀI KHOẢN MẠNG LƯỚI</span><h1>{title}</h1><p>{description}</p>
       {!isConfigured && <Notice>Cổng tài khoản đang được chuẩn bị. Biểu mẫu sẽ được mở sau khi hoàn tất kết nối hệ thống.</Notice>}{error && <Notice tone="error">{error}</Notice>}{message && <Notice tone="success">{message}</Notice>}
       <form onSubmit={(e) => { void submit(e); }} className="p-form">
         {mode === 'register' && <label>Họ và tên<input name="full_name" autoComplete="name" minLength={2} maxLength={120} placeholder="Nguyễn Văn An" required /></label>}
@@ -63,9 +63,8 @@ export default function AuthPage({ mode }: { mode: Mode }) {
         {mode === 'register' && <label className="p-checkbox"><input type="checkbox" required /><span>Tôi đồng ý để hệ thống xử lý thông tin tài khoản phục vụ hoạt động Mạng lưới. Thông tin liên hệ cá nhân không công khai mặc định.</span></label>}
         <button className="p-btn" disabled={!isConfigured || busy || (mode === 'reset' && !auth.session)}>{busy ? 'Đang xử lý…' : button}<ArrowUpRight size={18} /></button>
       </form>
-      {['login', 'admin'].includes(mode) && <div className="auth-links"><a href="#/quen-mat-khau">Quên mật khẩu?</a><a href="#/dang-ky">Tạo tài khoản</a></div>}
-      {['register', 'forgot', 'reset'].includes(mode) && <p className="auth-switch">Đã có tài khoản? <a href="#/dang-nhap">Đăng nhập</a></p>}
-      {mode === 'login' && <a className="admin-entry" href="#/admin/dang-nhap">Đăng nhập dành cho quản trị viên →</a>}
+      {mode === 'login' && <div className="auth-links"><a href="#/quen-mat-khau">Quên mật khẩu?</a><a href={nextClub ? "#/dang-ky?next=clb" : "#/dang-ky"}>Tạo tài khoản</a></div>}
+      {['register', 'forgot', 'reset'].includes(mode) && <p className="auth-switch">Đã có tài khoản? <a href={nextClub ? "#/dang-nhap?next=clb" : "#/dang-nhap"}>Đăng nhập</a></p>}
     </div></main>
   </div>;
 }

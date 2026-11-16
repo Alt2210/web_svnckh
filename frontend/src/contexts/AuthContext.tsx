@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signOut() {
     await signOutSession();
-    setSession(null); setProfile(null); setRoles([]); navigate('/dang-nhap');
+    setSession(null); setProfile(null); setRoles([]); navigate('/');
   }
   return <AuthContext.Provider value={{ session, profile, roles, loading, error, aal2, refresh, signOut, callbackError, dismissCallbackError: () => setCallbackError('') }}>{children}</AuthContext.Provider>;
 }

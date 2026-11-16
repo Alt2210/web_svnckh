@@ -1,13 +1,15 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useScrollMotion } from '../features/landing/useScrollMotion';
 import { ActivityCarousel } from '../features/landing/ActivityCarousel';
 import { SymbolIcon } from '../features/landing/SymbolIcon';
 import { useAuth } from '../contexts/AuthContext';
-import { navigate } from '../lib/navigation';
+import { navigate, useRoute } from '../lib/navigation';
+import { readableError } from '../lib/errors';
+const ClubApplicationDialog = lazy(() => import('../features/applications/ClubApplicationDialog'));
 
 const navItems = [
   ['Mạng lưới', '#mang-luoi'],
-  ['Hoạt động', '#/hoat-dong'],
+  ['Hoạt động', '#hoat-dong'],
   ['Tham gia', '#tham-gia'],
 ] as const;
 
@@ -138,7 +140,12 @@ function NetworkArtwork() {
 }
 
 export default function LandingPage() {
-  const { session } = useAuth();
+  const auth = useAuth();
+  const { session } = auth;
+  const route = useRoute();
+  const applicationOpen = new URLSearchParams(route.split('?')[1] || '').get('ho-so') === 'clb';
+  const [accountError, setAccountError] = useState('');
+  const openApplication = () => { setMenuOpen(false); navigate('/?ho-so=clb'); };
   const pageRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -166,8 +173,9 @@ export default function LandingPage() {
         </button>
         <nav id="temp-navigation" className={menuOpen ? 'main-nav is-open' : 'main-nav'} aria-label="Điều hướng chính">
           {navItems.map(([label, href]) => <a key={href} href={href} onClick={closeMenu}>{label}</a>)}
-          <a className="landing-login" href={session ? '#/tai-khoan' : '#/dang-nhap'} onClick={closeMenu}>{session ? 'Tài khoản' : 'Đăng nhập'}</a>
-          <a className="nav-cta" href={session ? '#/clb' : '#/dang-ky'} onClick={closeMenu}>{session ? 'CLB của tôi' : 'Đăng ký'} <Arrow diagonal /></a>
+          {session ? <button className="landing-session-button" onClick={() => { void auth.signOut().catch((error) => setAccountError(readableError(error))); }}>Đăng xuất</button> : <a className="landing-login" href="#/dang-nhap" onClick={closeMenu}>Đăng nhập</a>}
+          {auth.roles.includes('admin') && <a href="#/admin/ho-so" onClick={closeMenu}>Duyệt hồ sơ</a>}
+          <button className="nav-cta landing-session-button" onClick={openApplication}>{session ? 'Hồ sơ CLB' : 'Nộp hồ sơ CLB'} <Arrow diagonal /></button>
         </nav>
       </header>
 
@@ -233,7 +241,6 @@ export default function LandingPage() {
           <div className="section-kicker"><span>02</span><i /> CÙNG NHAU HOẠT ĐỘNG</div>
           <div className="activities-heading"><h2>Một mạng lưới.<br /><em>Nhiều khả năng.</em></h2><p>Kết nối là điểm bắt đầu. Từ đó, các CLB cùng chia sẻ thông tin, khám phá cơ hội và tham gia những hoạt động chung.</p></div>
           <ActivityCarousel items={activities} />
-          <div className="landing-events-link"><a className="button landing-events-button" href="#/hoat-dong">Xem tất cả hoạt động <Arrow diagonal /></a><p>Khám phá chương trình, kết nối và cùng tham gia.</p></div>
         </section>
         </div>
 
@@ -262,7 +269,7 @@ export default function LandingPage() {
             </article>)}
           </div>
           <div className="join-preparation" data-reveal><div><span className="scene-label">CHUẨN BỊ TRƯỚC KHI BẮT ĐẦU</span><h3>Một hồ sơ rõ ràng.<br />Một hành trình thuận lợi hơn.</h3></div><ul><li><b>Thông tin tổ chức</b><span>Tên CLB, đơn vị chủ quản, lĩnh vực và người đại diện.</span></li><li><b>Dấu ấn hoạt động</b><span>Giới thiệu cơ cấu, hoạt động và minh chứng liên quan.</span></li><li><b>Theo dõi hướng dẫn</b><span>Thành phần hồ sơ và thời hạn được thông báo theo từng đợt.</span></li></ul></div>
-          <div className="join-bottom"><p>Trước khi nộp, hãy xem kỹ thông báo về điều kiện, thành phần hồ sơ và thời gian tiếp nhận.</p><div className="join-actions"><button type="button" className="button button-yellow" onClick={() => navigate(session ? '/clb/tao' : '/dang-nhap')}>Đăng ký câu lạc bộ <Arrow diagonal /></button><a className="button button-outline" href="#faq">Thông tin cần biết <Arrow diagonal /></a></div></div>
+          <div className="join-bottom"><p>Trước khi nộp, hãy xem kỹ thông báo về điều kiện, thành phần hồ sơ và thời gian tiếp nhận.</p><div className="join-actions"><button type="button" className="button button-yellow" onClick={openApplication}>Nộp hồ sơ câu lạc bộ <Arrow diagonal /></button><a className="button button-outline" href="#faq">Thông tin cần biết <Arrow diagonal /></a></div></div>
         </section>
 
         <section className="faq section-pad" id="faq">
@@ -293,6 +300,8 @@ export default function LandingPage() {
         </div>
         <div className="footer-bottom"><span>© SVNCKH-NET</span><span>Mạng lưới CLB Sinh viên Nghiên cứu Khoa học Toàn quốc</span><a href="#top">Lên đầu trang ↑</a></div>
       </footer>
+      {accountError && <div className="auth-callback-notice" role="alert"><p>{accountError}</p><button onClick={() => setAccountError('')} aria-label="Đóng thông báo">×</button></div>}
+      {applicationOpen && <Suspense fallback={null}><ClubApplicationDialog onClose={() => navigate('/', true)} /></Suspense>}
     </div>
   );
 }

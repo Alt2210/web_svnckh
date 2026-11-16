@@ -16,7 +16,7 @@ export function Router({ children }: { children: ReactNode }) {
     window.addEventListener('popstate', change);
     return () => { window.removeEventListener('hashchange', change); window.removeEventListener('popstate', change); };
   }, []);
-  useEffect(() => { if (window.location.hash.startsWith('#/')) window.scrollTo(0, 0); }, [route]);
+  useEffect(() => { if (window.location.hash.startsWith('#/')) window.scrollTo(0, 0); }, [route.split('?')[0]]);
   return <RouteContext.Provider value={route}>{children}</RouteContext.Provider>;
 }
 export const useRoute = () => useContext(RouteContext);
