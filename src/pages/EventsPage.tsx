@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowUpRight, CalendarDays, MapPin, Users } from 'lucide-react';
+import { ArrowUpRight, CalendarDays, MapPin, Users, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { EmptyState, Notice, PortalLayout } from '../components/PortalLayout';
 import { useAsyncData } from '../hooks/useAsyncData';
@@ -9,8 +9,12 @@ import { dateLabel, eventLabels, type EventFeedback, type EventRegistration, typ
 
 export function EventShell({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
   const auth = useAuth();
-  if (auth.session) return <PortalLayout title={title} subtitle={subtitle}>{children}</PortalLayout>;
-  return <div className="portal events-public"><header className="portal-header"><a className="portal-brand" href="#/">SVNCKH NETWORK</a><a className="p-btn secondary" href="#/dang-nhap">Đăng nhập</a></header><main className="events-public-main"><a className="p-back" href="#/">← Trang chủ</a><div className="portal-heading"><div><span className="portal-eyebrow">CÙNG NHAU HOẠT ĐỘNG</span><h1>{title}</h1><p>{subtitle}</p></div></div>{children}</main></div>;
+  return <div className="portal events-public">
+    <header className="events-header"><a className="portal-brand" href="#/" aria-label="SVNCKH Network, trang chủ"><img src={`${import.meta.env.BASE_URL}assets/logo-white.svg`} alt="" /><span>SVNCKH<span>NETWORK</span></span></a><nav aria-label="Điều hướng hoạt động"><a href="#/">Trang chủ</a><a href="#/hoat-dong" aria-current="page">Hoạt động</a><a className="events-account-link" href={auth.session ? '#/tai-khoan' : '#/dang-nhap'}>{auth.session ? 'Tài khoản' : 'Đăng nhập'}<ArrowUpRight size={16} /></a></nav></header>
+    <section className="events-masthead"><div className="events-masthead-inner"><a className="events-home-link" href="#/"><ArrowLeft size={16} />Về trang chủ</a><span className="portal-eyebrow">KẾT NỐI TRI THỨC · CÙNG NHAU PHÁT TRIỂN</span><h1>{title}</h1>{subtitle && <p>{subtitle}</p>}<div className="events-masthead-note"><CalendarDays size={18} /><span>Workshop · Hội thảo · Tọa đàm · Hoạt động cộng đồng</span></div></div><span className="events-hero-orbit" aria-hidden="true" /></section>
+    <main className="events-public-main" id="danh-sach-hoat-dong">{children}</main>
+    <footer className="events-footer"><a className="portal-brand" href="#/">SVNCKH NETWORK</a><p>Kết nối để nghiên cứu đi xa hơn.</p><a href="#/hoat-dong">Khám phá hoạt động <ArrowUpRight size={16} /></a></footer>
+  </div>;
 }
 export function EventTag({ value }: { value: string }) { return <span className={`event-tag event-tag-${value}`}>{eventLabels[value] || value}</span>; }
 export function EventCard({ event, children }: { event: NetworkEvent; children?: ReactNode }) {
@@ -19,13 +23,15 @@ export function EventCard({ event, children }: { event: NetworkEvent; children?:
 export default function EventsPage() {
   const auth = useAuth();
   const [search, setSearch] = useState('');
-  const [period, setPeriod] = useState('upcoming');
+  const [period, setPeriod] = useState('all');
+  const [category, setCategory] = useState('all');
   const query = useAsyncData(async () => {
     const { data, error } = await database().from('events').select('*').in('status', ['published', 'completed', 'cancelled']).order('starts_at').limit(200);
     if (error) throw error; return (data || []) as NetworkEvent[];
   }, `events:${auth.session?.user.id || ''}:${auth.aal2}`);
-  const events = query.data?.filter((e) => `${e.title} ${e.category} ${e.location}`.toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi')) && (period === 'all' || (period === 'upcoming' ? new Date(e.ends_at).getTime() > Date.now() && e.status !== 'cancelled' : new Date(e.ends_at).getTime() <= Date.now() || e.status === 'cancelled')));
-  return <EventShell title="Hoạt động & sự kiện" subtitle="Gặp gỡ, học hỏi và cùng tạo nên những kết nối mới."><div className="page-actions"><p>Đăng ký một chỗ cho bạn. Khi đủ chỗ, bạn có thể tham gia danh sách chờ.</p>{auth.session && <a className="p-btn secondary" href="#/dang-ky-hoat-dong">Đăng ký của tôi</a>}</div><div className="table-toolbar event-filters"><label className="p-label">Tìm hoạt động<input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Tên, chủ đề hoặc địa điểm…" type="search" /></label><label className="p-label">Thời gian<select value={period} onChange={(e) => setPeriod(e.target.value)}><option value="upcoming">Sắp diễn ra</option><option value="past">Đã kết thúc / đã hủy</option><option value="all">Tất cả</option></select></label><button className="p-btn secondary" onClick={query.reload} disabled={query.loading}>Làm mới</button></div>{query.error && <Notice tone="error">{query.error}</Notice>}{query.loading ? <Notice>Đang tải hoạt động…</Notice> : events?.length ? <div className="events-grid">{events.map((event) => <EventCard key={event.id} event={event} />)}</div> : !query.error && <EmptyState title="Chưa có hoạt động phù hợp" description="Bạn có thể thay đổi bộ lọc hoặc quay lại sau khi ban tổ chức công bố chương trình mới." />}</EventShell>;
+  const events = query.data?.filter((e) => `${e.title} ${e.category} ${e.location}`.toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi')) && (category === 'all' || e.category === category) && (period === 'all' || (period === 'upcoming' ? new Date(e.ends_at).getTime() > Date.now() && e.status !== 'cancelled' : new Date(e.ends_at).getTime() <= Date.now() || e.status === 'cancelled')));
+  const filtered = Boolean(search || category !== 'all' || period !== 'all');
+  return <EventShell title="Hoạt động & sự kiện" subtitle="Khám phá những cuộc gặp gỡ, ý tưởng và cơ hội dành cho cộng đồng nghiên cứu trẻ."><div className="events-list-heading"><div><span className="portal-eyebrow">LỊCH HOẠT ĐỘNG</span><h2>Tìm một kết nối mới.</h2><p>Tự do khám phá chương trình. Đăng nhập khi bạn muốn đăng ký tham gia.</p></div>{auth.session && <a className="p-btn secondary" href="#/dang-ky-hoat-dong">Đăng ký của tôi <ArrowUpRight size={16} /></a>}</div><div className="table-toolbar event-filters"><label className="p-label">Tìm hoạt động<input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Tên, chủ đề hoặc địa điểm…" type="search" /></label><label className="p-label">Loại chương trình<select value={category} onChange={(e) => setCategory(e.target.value)}><option value="all">Tất cả chương trình</option>{[...new Set(query.data?.map((e) => e.category))].sort().map((value) => <option key={value}>{value}</option>)}</select></label><label className="p-label">Thời gian<select value={period} onChange={(e) => setPeriod(e.target.value)}><option value="all">Tất cả thời gian</option><option value="upcoming">Sắp diễn ra</option><option value="past">Đã kết thúc / đã hủy</option></select></label><button className="p-btn secondary" onClick={query.reload} disabled={query.loading}>Làm mới</button></div>{query.error && <Notice tone="error">{query.error}</Notice>}{query.loading ? <Notice>Đang tải hoạt động…</Notice> : <>{!query.error && <p className="events-result-count" aria-live="polite">{events?.length || 0} hoạt động{filtered ? ' phù hợp' : ' đã công bố'}</p>}{events?.length ? <div className="events-grid">{events.map((event) => <EventCard key={event.id} event={event} />)}</div> : !query.error && <EmptyState title={filtered ? 'Chưa tìm thấy hoạt động phù hợp' : 'Những cuộc hẹn mới đang được chuẩn bị'} description={filtered ? 'Thử một từ khóa khác hoặc xóa bộ lọc để xem thêm chương trình.' : 'Các chương trình sẽ xuất hiện tại đây ngay khi ban tổ chức công bố. Hẹn bạn quay lại để khám phá và kết nối.'} action={filtered ? <button className="p-btn secondary" onClick={() => { setSearch(''); setPeriod('all'); setCategory('all'); }}>Xóa bộ lọc</button> : <a className="p-btn secondary" href="#/">Trở về trang chủ <ArrowUpRight size={16} /></a>} />}</>}</EventShell>;
 }
 
 export function EventDetailPage({ id }: { id: string }) {

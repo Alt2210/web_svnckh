@@ -7,7 +7,7 @@ import { navigate } from '../lib/navigation';
 
 const navItems = [
   ['Mạng lưới', '#mang-luoi'],
-  ['Hoạt động', '#hoat-dong'],
+  ['Hoạt động', '#/hoat-dong'],
   ['Tham gia', '#tham-gia'],
 ] as const;
 
@@ -233,7 +233,7 @@ export default function LandingPage() {
           <div className="section-kicker"><span>02</span><i /> CÙNG NHAU HOẠT ĐỘNG</div>
           <div className="activities-heading"><h2>Một mạng lưới.<br /><em>Nhiều khả năng.</em></h2><p>Kết nối là điểm bắt đầu. Từ đó, các CLB cùng chia sẻ thông tin, khám phá cơ hội và tham gia những hoạt động chung.</p></div>
           <ActivityCarousel items={activities} />
-          <div className="landing-events-link"><a className="underlined-link" href="#/hoat-dong">Xem lịch hoạt động & đăng ký tham gia <Arrow diagonal /></a></div>
+          <div className="landing-events-link"><a className="button landing-events-button" href="#/hoat-dong">Xem tất cả hoạt động <Arrow diagonal /></a><p>Khám phá chương trình, kết nối và cùng tham gia.</p></div>
         </section>
         </div>
 
