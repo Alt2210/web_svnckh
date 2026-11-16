@@ -2,9 +2,8 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useScrollMotion } from '../features/landing/useScrollMotion';
 import { ActivityCarousel } from '../features/landing/ActivityCarousel';
 import { SymbolIcon } from '../features/landing/SymbolIcon';
-import { useAuth } from '../contexts/AuthContext';
+import { HeaderAccount } from '../components/HeaderAccount';
 import { navigate } from '../lib/navigation';
-import { readableError } from '../lib/errors';
 
 const navItems = [
   ['Mạng lưới', '#mang-luoi'],
@@ -139,9 +138,6 @@ function NetworkArtwork() {
 }
 
 export default function LandingPage() {
-  const auth = useAuth();
-  const { session } = auth;
-  const [accountError, setAccountError] = useState('');
   const openApplication = () => { setMenuOpen(false); navigate('/clb'); };
   const pageRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -170,9 +166,7 @@ export default function LandingPage() {
         </button>
         <nav id="temp-navigation" className={menuOpen ? 'main-nav is-open' : 'main-nav'} aria-label="Điều hướng chính">
           {navItems.map(([label, href]) => <a key={href} href={href} onClick={closeMenu}>{label}</a>)}
-          {session ? <button className="landing-session-button" onClick={() => { void auth.signOut().catch((error) => setAccountError(readableError(error))); }}>Đăng xuất</button> : <a className="landing-login" href="#/dang-nhap" onClick={closeMenu}>Đăng nhập</a>}
-          {auth.roles.includes('admin') && <a href="#/admin/ho-so" onClick={closeMenu}>Duyệt hồ sơ</a>}
-          <button className="nav-cta landing-session-button" onClick={openApplication}>{session ? 'Hồ sơ CLB' : 'Nộp hồ sơ CLB'} <Arrow diagonal /></button>
+          <HeaderAccount variant="landing" onNavigate={closeMenu} />
         </nav>
       </header>
 
@@ -297,7 +291,6 @@ export default function LandingPage() {
         </div>
         <div className="footer-bottom"><span>© SVNCKH-NET</span><span>Mạng lưới CLB Sinh viên Nghiên cứu Khoa học Toàn quốc</span><a href="#top">Lên đầu trang ↑</a></div>
       </footer>
-      {accountError && <div className="auth-callback-notice" role="alert"><p>{accountError}</p><button onClick={() => setAccountError('')} aria-label="Đóng thông báo">×</button></div>}
     </div>
   );
 }

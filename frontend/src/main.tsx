@@ -10,6 +10,7 @@ import './styles/mobile.css';
 import './styles/refinements.css';
 import './styles/portal.css';
 import './styles/applications.css';
+import './styles/header-account.css';
 
 void initializeAuth();
 createRoot(document.getElementById('root')!).render(
