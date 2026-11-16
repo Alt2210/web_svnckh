@@ -285,9 +285,9 @@ export default function LandingPage() {
       <footer className="footer">
         <div className="footer-main">
           <a className="brand brand-footer" href="#top"><img src={`${import.meta.env.BASE_URL}assets/logo-white.svg`} alt="" /><span className="brand-name"><b>SVNCKH</b><small>NETWORK</small></span></a>
-          <p className="footer-manifesto">Kết nối cộng đồng<br />nghiên cứu trẻ Việt Nam.</p>
+          <div className="footer-affiliation"><img src={`${import.meta.env.BASE_URL}assets/cytast-logo-white.png`} alt="Logo Trung tâm Phát triển Khoa học, Công nghệ và Tài năng trẻ (CYTAST)" width="1439" height="1486" loading="lazy" decoding="async" /><p>Mạng lưới trực thuộc <strong>Trung tâm Phát triển Khoa học, Công nghệ và Tài năng trẻ (CYTAST)</strong></p></div>
           <div className="footer-nav"><span>KHÁM PHÁ</span><a href="#mang-luoi">Về Mạng lưới</a><a href="#hoat-dong">Hoạt động</a><a href="#tham-gia">Cách tham gia</a></div>
-          <div className="footer-contact"><span>KẾT NỐI VỚI CHÚNG TÔI</span><a href="#tham-gia">Tìm hiểu về cách tham gia <Arrow diagonal /></a><small>Theo dõi thông báo chính thức của Mạng lưới.</small></div>
+          <div className="footer-contact"><span>LIÊN HỆ:</span><address>Số 7 Xã Đàn, phường Kim Liên, TP. Hà Nội</address><a href="#tham-gia">Tìm hiểu về cách tham gia <Arrow diagonal /></a></div>
         </div>
         <div className="footer-bottom"><span>© SVNCKH-NET</span><span>Mạng lưới CLB Sinh viên Nghiên cứu Khoa học Toàn quốc</span><a href="#top">Lên đầu trang ↑</a></div>
       </footer>

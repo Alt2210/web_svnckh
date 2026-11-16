@@ -1,4 +1,12 @@
 /* Keep Vietnamese diacritics clear and group headings by meaning. */
+.temp-experience .footer-main { grid-template-columns: .95fr 1.6fr .7fr 1.1fr; }
+.footer-affiliation { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; min-width: 0; }
+.footer-affiliation > img { width: 86px; height: auto; display: block; object-fit: contain; }
+.footer-affiliation > p { max-width: 360px; margin: 0; color: #c3cede; font-size: 13px; line-height: 1.85; text-wrap: pretty; }
+.footer-affiliation strong { display: block; color: white; font-weight: 500; }
+.footer-contact address { max-width: 260px; margin: 0 0 10px; font-style: normal; color: #d9e2ef; font-size: 13px; line-height: 1.85; text-wrap: pretty; }
+@media (max-width: 1000px) { .temp-experience .footer-main { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 680px) { .temp-experience .footer-main { grid-template-columns: 1fr 1fr; }.footer-affiliation { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 20px; }.footer-affiliation > img { width: 72px; flex: 0 0 72px; }.footer-affiliation > p { font-size: 12px; }.footer-contact address { max-width: none; } }
 .temp-experience h1,
 .temp-experience h2,
 .temp-experience h3 { text-wrap: balance; overflow-wrap: normal; word-break: normal; }
