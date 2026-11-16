@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
-import type { Session } from '@supabase/supabase-js';
-import { supabase, readableError, initializeAuth } from '../lib/supabase';
+import { isConfigured, initializeAuth, subscribeAuth, signOutSession, type Session } from '../services/auth.service';
+import { loadAccount } from '../services/profiles.service';
+import { readableError } from '../lib/errors';
 import { navigate } from '../lib/navigation';
 import type { Profile, StaffRole } from '../types/domain';
 
@@ -14,7 +15,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<StaffRole[]>([]);
-  const [loading, setLoading] = useState(Boolean(supabase));
+  const [loading, setLoading] = useState(isConfigured);
   const [error, setError] = useState('');
   const [aal2, setAal2] = useState(false);
   const [callbackError, setCallbackError] = useState('');
@@ -22,8 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refresh = useCallback(async () => { setRevision((v) => v + 1); }, []);
 
   useEffect(() => {
-    if (!supabase) return;
-    const client = supabase;
+    if (!isConfigured) return;
     let alive = true;
     initializeAuth().then((result) => {
       if (!alive) return;
@@ -33,32 +33,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (result.passwordSetup) navigate('/dat-lai-mat-khau', true);
       else if (result.callbackError && !result.session) navigate('/dang-nhap', true);
     });
-    const { data } = client.auth.onAuthStateChange((event, next) => {
+    const unsubscribe = subscribeAuth((event, next) => {
       setSession(next);
       if (!next) { setProfile(null); setRoles([]); setAal2(false); setLoading(false); }
       else { setLoading(true); setRevision((value) => value + 1); }
       if (event === 'PASSWORD_RECOVERY') navigate('/dat-lai-mat-khau', true);
     });
-    return () => { alive = false; data.subscription.unsubscribe(); };
+    return () => { alive = false; unsubscribe(); };
   }, []);
 
   useEffect(() => {
-    if (!session || !supabase) return;
+    if (!session || !isConfigured) return;
     let alive = true;
-    const client = supabase;
     const load = async () => {
       try {
-        const [p, r, assurance] = await Promise.all([
-          client.from('profiles').select('*').eq('id', session.user.id).single(),
-          client.from('access_roles').select('role').eq('user_id', session.user.id),
-          client.auth.mfa.getAuthenticatorAssuranceLevel(),
-        ]);
-        if (p.error) throw p.error;
-        if (r.error) throw r.error;
-        if (assurance.error) throw assurance.error;
+        const account = await loadAccount(session.user.id);
         if (!alive) return;
-        setProfile(p.data as Profile); setRoles(r.data.map((item) => item.role as StaffRole));
-        setAal2(assurance.data.currentLevel === 'aal2'); setError('');
+        setProfile(account.profile); setRoles(account.roles);
+        setAal2(account.aal2); setError('');
       } catch (err) { if (alive) { setProfile(null); setRoles([]); setError(readableError(err)); } }
       finally { if (alive) setLoading(false); }
     };
@@ -67,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [session?.access_token, session?.user.id, revision]);
 
   async function signOut() {
-    if (supabase) { const result = await supabase.auth.signOut(); if (result.error) throw result.error; }
+    await signOutSession();
     setSession(null); setProfile(null); setRoles([]); navigate('/dang-nhap');
   }
   return <AuthContext.Provider value={{ session, profile, roles, loading, error, aal2, refresh, signOut, callbackError, dismissCallbackError: () => setCallbackError('') }}>{children}</AuthContext.Provider>;

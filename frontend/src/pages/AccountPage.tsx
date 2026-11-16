@@ -2,7 +2,8 @@ import { useState, type FormEvent } from 'react';
 import { ArrowUpRight, Building2, CircleCheck, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { Notice, PortalLayout } from '../components/PortalLayout';
-import { database, readableError } from '../lib/supabase';
+import { saveProfile } from '../services/profiles.service';
+import { readableError } from '../lib/errors';
 
 export function AccountPage() {
   const { profile, roles, aal2 } = useAuth();
@@ -22,8 +23,7 @@ export function ProfilePage() {
     event.preventDefault(); setBusy(true); setError(''); setMessage('');
     const data = new FormData(event.currentTarget);
     try {
-      const result = await database().rpc('save_profile', { p_full_name: data.get('full_name'), p_university: data.get('university'), p_field: data.get('field'), p_bio: data.get('bio') });
-      if (result.error) throw result.error;
+      await saveProfile({ full_name: String(data.get('full_name') || ''), university: String(data.get('university') || ''), field: String(data.get('field') || ''), bio: String(data.get('bio') || '') });
       await auth.refresh(); setMessage('Đã lưu hồ sơ cá nhân.');
     } catch (err) { setError(readableError(err)); } finally { setBusy(false); }
   }

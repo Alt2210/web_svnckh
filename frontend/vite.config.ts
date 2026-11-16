@@ -1,8 +1,13 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import { fileURLToPath } from 'node:url';
+
+const frontendRoot = fileURLToPath(new URL('.', import.meta.url));
+const repositoryRoot = fileURLToPath(new URL('..', import.meta.url));
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), 'VITE_');
+  // Keep existing local configuration at repository root. Only VITE_ is exposed.
+  const env = loadEnv(mode, repositoryRoot, 'VITE_');
   const key = env.VITE_SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_ANON_KEY || '';
   let role = '';
   if (key.split('.').length === 3) {
@@ -10,6 +15,8 @@ export default defineConfig(({ mode }) => {
   }
   if (key.startsWith('sb_secret_') || role === 'service_role') throw new Error('Never use a Supabase secret/service_role key in VITE_ variables. Use a publishable or anon key.');
   return {
+  root: frontendRoot,
+  envDir: repositoryRoot,
   plugins: [react()],
   base: mode === 'pages' ? '/web_svnckh/' : '/',
   build: {

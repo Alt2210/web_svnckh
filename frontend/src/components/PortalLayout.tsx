@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { ArrowUpRight, Building2, CircleUserRound, LayoutDashboard, LogOut, Menu, ShieldCheck, Users, X, CalendarDays, ScrollText } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useRoute } from '../lib/navigation';
-import { readableError } from '../lib/supabase';
+import { readableError } from '../lib/errors';
 
 export function PortalLayout({ children, title, subtitle }: { children: ReactNode; title: string; subtitle?: string }) {
   const auth = useAuth();

@@ -1,7 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { navigate } from '../lib/navigation';
-import { isConfigured, database, callbackUrl, readableError } from '../lib/supabase';
+import { isConfigured, resendConfirmation } from '../services/auth.service';
+import { readableError } from '../lib/errors';
 import { Notice, PortalLayout } from './PortalLayout';
 
 export function ProtectedRoute({ children, staff = false, admin = false }: { children: ReactNode; staff?: boolean; admin?: boolean }) {
@@ -11,7 +12,7 @@ export function ProtectedRoute({ children, staff = false, admin = false }: { chi
   if (!isConfigured) return <Unavailable />;
   if (auth.loading) return <div className="portal-loading" role="status">Đang tải tài khoản…</div>;
   if (!auth.session) return null;
-  if (!auth.session.user.email_confirmed_at) return <PortalLayout title="Vui lòng xác minh email"><Notice>Kiểm tra hộp thư và mở liên kết xác minh trước khi sử dụng chức năng tài khoản và đăng ký câu lạc bộ.</Notice>{message && <Notice>{message}</Notice>}<button className="p-btn" onClick={() => { void database().auth.resend({ type: 'signup', email: auth.session!.user.email!, options: { emailRedirectTo: callbackUrl() } }).then(({ error }) => setMessage(error ? readableError(error) : 'Đã yêu cầu gửi lại email xác minh.')); }}>Gửi lại email xác minh</button></PortalLayout>;
+  if (!auth.session.user.email_confirmed_at) return <PortalLayout title="Vui lòng xác minh email"><Notice>Kiểm tra hộp thư và mở liên kết xác minh trước khi sử dụng chức năng tài khoản và đăng ký câu lạc bộ.</Notice>{message && <Notice>{message}</Notice>}<button className="p-btn" onClick={() => { void resendConfirmation(auth.session!.user.email!).then(() => setMessage('Đã yêu cầu gửi lại email xác minh.')).catch((err) => setMessage(readableError(err))); }}>Gửi lại email xác minh</button></PortalLayout>;
   if (auth.error || !auth.profile) return <PortalLayout title="Không tải được tài khoản"><Notice tone="error">{auth.error || 'Vui lòng đăng nhập lại.'}</Notice><button className="p-btn" onClick={() => { void auth.refresh(); }}>Thử lại</button></PortalLayout>;
   if (auth.profile.status === 'locked') return <PortalLayout title="Tài khoản đã bị khóa"><Notice tone="error">Tài khoản tạm thời không thể sử dụng các chức năng. Vui lòng liên hệ đơn vị quản lý.</Notice></PortalLayout>;
   if ((admin && !auth.roles.includes('admin')) || (staff && !auth.roles.length)) return <PortalLayout title="Không có quyền truy cập"><Notice tone="error">Mục này dành cho cán bộ được phân công. Quyền truy cập được kiểm tra tại cơ sở dữ liệu.</Notice></PortalLayout>;

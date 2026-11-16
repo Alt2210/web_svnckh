@@ -15,7 +15,7 @@ Migration hoạt động `202611160002_events.sql` đã được người dùng 
 Admin có MFA quản lý hoạt động cấp Mạng lưới. Đại diện CLB đang hoạt động, đã được công nhận, quản lý hoạt động của CLB mình. Phạm vi hiển thị hỗ trợ công khai hoặc tài khoản đã xác minh; chưa giới hạn theo tư cách thành viên từng CLB. Tổng kết hiện được tính từ đăng ký/điểm danh/phản hồi, chưa có bản báo cáo chốt bất biến. Danh sách hoạt động hiện tải tối đa 200 bản ghi mỗi lượt. Chưa kiểm thử tương tác giao diện và email callback trên trình duyệt thật; kiểm thử SQL tự động chạy trên PGlite.
 
 1. Mở project `tyitjqomfpfniwcgmnkr` trong tài khoản Supabase của bạn.
-2. Mở SQL Editor, chạy **một lần** toàn bộ `supabase/migrations/202611160001_initial.sql` trong một project mới. Migration chạy trong transaction, tạo bảng, RPC, RLS và bucket riêng tư `club-evidence`.
+2. Mở SQL Editor, chạy **một lần** toàn bộ `backend/supabase/migrations/202611160001_initial.sql` trong một project mới. Migration chạy trong transaction, tạo bảng, RPC, RLS và bucket riêng tư `club-evidence`.
 3. Không chạy lại migration khởi tạo trên schema đã tồn tại. Mọi thay đổi sau đó cần migration bổ sung.
 
 ## 2. Cấu hình xác thực
@@ -34,7 +34,7 @@ Tài liệu: [React Auth](https://supabase.com/docs/guides/auth/quickstarts/reac
 
 ## 3. Kết nối frontend
 
-Sao chép `.env.example` thành `.env.local` tại thư mục `main`, rồi điền:
+Sao chép `.env.example` thành `.env.local` tại thư mục `main` (gốc repository), rồi điền:
 
 ```dotenv
 VITE_SUPABASE_URL=https://PROJECT_REF.supabase.co
@@ -48,7 +48,7 @@ Khởi động lại `npm.cmd run dev` sau khi sửa env. Không commit `.env.lo
 ## 4. Tạo admin đầu tiên
 
 1. Tự đăng ký tài khoản thông thường từ giao diện và xác minh email.
-2. Sửa email trong `supabase/bootstrap-admin.sql`, chạy script bằng SQL Editor.
+2. Sửa email trong `backend/supabase/bootstrap-admin.sql`, chạy script bằng SQL Editor.
 3. Đăng xuất/đăng nhập lại để tải quyền.
 4. Mở **Bảo mật tài khoản**, thiết lập ứng dụng TOTP rồi xác thực mã 6 số.
 5. Khu vực admin được mở sau khi phiên có mức `aal2`.
@@ -71,7 +71,7 @@ Các bài test SQL tự động chạy bằng `npm.cmd test`, dùng PostgreSQL t
 
 ## 6. Khi được phép triển khai lại GitHub Pages
 
-Người dùng đã cho phép triển khai bản demo lên GitHub Pages. Repository variables `VITE_SUPABASE_URL` và `VITE_SUPABASE_PUBLISHABLE_KEY` cung cấp cấu hình frontend cho workflow; không đưa secret key hoặc mật khẩu lên GitHub. Site dùng `src` ở trang gốc; hash routes hoạt động trên Pages mà không cần rewrite server.
+Người dùng đã cho phép triển khai bản demo lên GitHub Pages. Repository variables `VITE_SUPABASE_URL` và `VITE_SUPABASE_PUBLISHABLE_KEY` cung cấp cấu hình frontend cho workflow; không đưa secret key hoặc mật khẩu lên GitHub. Site dùng `frontend/src` ở trang gốc; hash routes hoạt động trên Pages mà không cần rewrite server.
 
 ## Giới hạn của đợt triển khai này
 
@@ -81,3 +81,7 @@ Người dùng đã cho phép triển khai bản demo lên GitHub Pages. Reposit
 - Các nhóm mời thành viên, cơ cấu đơn vị, chuyển người đại diện, thông báo, danh bạ công khai, đình chỉ/thu hồi tư cách thành viên, liệt kê phiên và báo cáo định kỳ còn ngoài phạm vi. Hoạt động đã có tạo/công bố/hủy, đăng ký/danh sách chờ, điểm danh, phản hồi và xuất danh sách CSV.
 - File minh chứng không công khai và không xóa từ frontend để bảo toàn lịch sử. Người vận hành cần bổ sung quy trình lưu giữ, xử lý file mồ côi, sao lưu và phục hồi.
 - Hiện không có thao tác cấp quyền quản trị trong UI. Cấp/thu hồi vai trò thực hiện bởi người vận hành tin cậy trong SQL Editor, có ghi nhận và đối chiếu quy chế.
+
+## Sau refactor cấu trúc
+
+Mã React ở `frontend/`, migration và kiểm thử database ở `backend/`. Các lệnh npm vẫn chạy từ `main`; không chạy lại migration đã áp dụng. Nhánh `refactor/frontend-backend-separation` chỉ nằm cục bộ, chưa merge/push và không thay đổi database hoặc website đang chạy. Xem `docs/ARCHITECTURE.md`.

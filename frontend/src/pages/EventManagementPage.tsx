@@ -2,27 +2,18 @@ import { useState, type FormEvent } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { EmptyState, Notice, PortalLayout } from '../components/PortalLayout';
 import { useAsyncData } from '../hooks/useAsyncData';
-import { database, readableError } from '../lib/supabase';
-import { eligibleClubs, eventRpc, loadEvent, localDateInput } from '../lib/events';
+import { readableError } from '../lib/errors';
+import { loadOrganizerEvents, loadEventEditor, loadEventAttendees, eventRpc, type EventOperation } from '../services/events.service';
+import { localDateInput } from '../lib/events';
 import { navigate } from '../lib/navigation';
 import { downloadCsv } from '../lib/csv';
-import { dateLabel, eventLabels, type EventAttendee, type NetworkEvent } from '../types/domain';
+import { dateLabel, eventLabels, type EventAttendee } from '../types/domain';
 import { EventCard, EventTag } from './EventsPage';
 
 function useOrganizerData() {
   const auth = useAuth();
   const admin = auth.roles.includes('admin');
-  const query = useAsyncData(async () => {
-    const clubs = await eligibleClubs(auth.session!.user.id);
-    let request = database().from('events').select('*').order('starts_at', { ascending: false });
-    if (!(admin && auth.aal2)) {
-      if (!clubs.length) return { clubs, events: [] as NetworkEvent[] };
-      request = request.in('organizer_club_id', clubs.map((c) => c.id));
-    }
-    const { data, error } = await request.limit(200);
-    if (error) throw error;
-    return { clubs, events: (data || []) as NetworkEvent[] };
-  }, `${auth.session!.user.id}:${admin}:${auth.aal2}`);
+  const query = useAsyncData(() => loadOrganizerEvents(auth.session!.user.id, admin && auth.aal2), `${auth.session!.user.id}:${admin}:${auth.aal2}`);
   return { ...query, admin: admin && auth.aal2, needsMfa: admin && !auth.aal2 };
 }
 
@@ -31,7 +22,7 @@ export default function EventManagementPage() {
   const [busy, setBusy] = useState(false), [error, setError] = useState(''), [message, setMessage] = useState('');
   const [filter, setFilter] = useState('all');
   const [cancelling, setCancelling] = useState<string | null>(null), [reason, setReason] = useState('');
-  async function act(fn: string, args: Record<string, unknown>, success: string) {
+  async function act(fn: EventOperation, args: Record<string, unknown>, success: string) {
     setBusy(true); setError(''); setMessage('');
     try { await eventRpc(fn, args); setMessage(success); setCancelling(null); setReason(''); query.reload(); }
     catch (err) { setError(readableError(err)); } finally { setBusy(false); }
@@ -58,15 +49,7 @@ export function EventEditorPage({ id }: { id?: string }) {
   const auth = useAuth();
   const admin = auth.roles.includes('admin') && auth.aal2;
   const [busy, setBusy] = useState(false), [error, setError] = useState('');
-  const query = useAsyncData(async () => {
-    const clubs = await eligibleClubs(auth.session!.user.id);
-    if (!id) return { clubs, event: null, url: '' };
-    const event = await loadEvent(id);
-    if (!(admin || clubs.some((c) => c.id === event.organizer_club_id))) throw new Error('Bạn không có quyền chỉnh sửa hoạt động này.');
-    const access = await database().from('event_access').select('meeting_url').eq('event_id', id).maybeSingle();
-    if (access.error) throw access.error;
-    return { clubs, event, url: String(access.data?.meeting_url || '') };
-  }, `${id || 'new'}:${auth.session!.user.id}:${admin}`);
+  const query = useAsyncData(() => loadEventEditor(id, auth.session!.user.id, admin), `${id || 'new'}:${auth.session!.user.id}:${admin}`);
   async function save(e: FormEvent<HTMLFormElement>) {
     e.preventDefault(); const form = new FormData(e.currentTarget); setError('');
     const payload: Record<string, unknown> = Object.fromEntries(form.entries());
@@ -99,11 +82,7 @@ export function EventEditorPage({ id }: { id?: string }) {
 export function EventAttendeesPage({ id }: { id: string }) {
   const auth = useAuth();
   const [search, setSearch] = useState(''), [filter, setFilter] = useState('all'), [busy, setBusy] = useState(false), [error, setError] = useState('');
-  const query = useAsyncData(async () => {
-    const event = await loadEvent(id);
-    const rows = await eventRpc('event_attendees', { p_event: id }) as EventAttendee[];
-    return { event, rows };
-  }, `${id}:${auth.session!.user.id}:${auth.aal2}`);
+  const query = useAsyncData(() => loadEventAttendees(id), `${id}:${auth.session!.user.id}:${auth.aal2}`);
   const rows = query.data?.rows.filter((r) => (filter === 'all' || r.status === filter) && `${r.full_name} ${r.email}`.toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi')));
   async function attendance(row: EventAttendee) {
     setBusy(true); setError('');

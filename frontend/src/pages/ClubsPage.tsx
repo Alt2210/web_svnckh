@@ -4,17 +4,14 @@ import { useAuth } from '../contexts/AuthContext';
 import { EmptyState, Notice, PortalLayout } from '../components/PortalLayout';
 import { StatusBadge } from '../components/StatusBadge';
 import { useAsyncData } from '../hooks/useAsyncData';
-import { database, readableError } from '../lib/supabase';
+import { listMyClubs, loadClubDetails, saveClub, uploadClubDocument, submitClub, clubDocumentUrl, loadApplicationHistory } from '../services/clubs.service';
+import { readableError } from '../lib/errors';
 import { navigate } from '../lib/navigation';
-import { dateLabel, statusLabels, type Application, type ApplicationEvent, type ApplicationVersion, type Club, type ClubDocument, type ClubInput, type Round } from '../types/domain';
+import { dateLabel, statusLabels, type Application, type ClubInput } from '../types/domain';
 
 export function ClubsPage() {
   const { session } = useAuth();
-  const result = useAsyncData(async () => {
-    const r = await database().from('clubs').select('*').eq('owner_id', session!.user.id).order('created_at', { ascending: false });
-    if (r.error) throw r.error;
-    return r.data as Club[];
-  }, session!.user.id);
+  const result = useAsyncData(() => listMyClubs(session!.user.id), session!.user.id);
   return <PortalLayout title="Câu lạc bộ của tôi" subtitle="Khai báo thông tin, chuẩn bị minh chứng và theo dõi hồ sơ gia nhập."><div className="page-actions"><p>Chỉ những câu lạc bộ do bạn đại diện được hiển thị tại đây.</p><a className="p-btn" href="#/clb/tao"><Plus size={18} />Đăng ký CLB</a></div>{result.error && <Notice tone="error">{result.error}</Notice>}{result.loading ? <p role="status">Đang tải câu lạc bộ…</p> : !result.data?.length ? <EmptyState title="Bắt đầu với câu lạc bộ của bạn" description="Khai báo hồ sơ tổ chức trước khi nộp đăng ký gia nhập Mạng lưới." action={<a className="p-btn" href="#/clb/tao">Tạo hồ sơ CLB</a>} /> : <div className="club-list">{result.data.map((club) => <article className="p-card club-card" key={club.id}><div className="club-monogram">{club.abbreviation.slice(0, 4) || 'CLB'}</div><div><StatusBadge status={club.membership} /> <StatusBadge status={club.status} /><h2>{club.name}</h2><p>{club.university}</p><span>{club.province} · {club.field}</span></div><a href={`#/clb/${club.id}`} className="p-btn secondary">Mở hồ sơ <ArrowUpRight size={17} /></a></article>)}</div>}</PortalLayout>;
 }
 
@@ -24,17 +21,7 @@ export function ClubDetailPage({ id }: { id?: string }) {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [roundId, setRoundId] = useState('');
-  const result = useAsyncData(async () => {
-    const client = database();
-    const [club, documents, applications, rounds] = await Promise.all([
-      id ? client.from('clubs').select('*').eq('id', id).single() : Promise.resolve({ data: null, error: null }),
-      id ? client.from('club_documents').select('*').eq('club_id', id).order('created_at') : Promise.resolve({ data: [], error: null }),
-      id ? client.from('applications').select('*').eq('club_id', id).order('submitted_at', { ascending: false }) : Promise.resolve({ data: [], error: null }),
-      client.from('application_rounds').select('*').eq('is_open', true).order('opens_at', { ascending: false }),
-    ]);
-    for (const r of [club, documents, applications, rounds]) if (r.error) throw r.error;
-    return { club: club.data as Club | null, documents: documents.data as ClubDocument[], applications: applications.data as Application[], rounds: rounds.data as Round[] };
-  }, id || 'create');
+  const result = useAsyncData(() => loadClubDetails(id), id || 'create');
   const club = result.data?.club;
   const owner = !club || club.owner_id === session!.user.id;
   const pending = result.data?.applications.some((app) => ['submitted', 'resubmitted', 'under_review', 'recommended'].includes(app.status));
@@ -46,9 +33,8 @@ export function ClubDetailPage({ id }: { id?: string }) {
     const form = new FormData(event.currentTarget);
     const payload = Object.fromEntries(['name', 'abbreviation', 'university', 'province', 'field', 'contact_email', 'description'].map((key) => [key, String(form.get(key) || '').trim()])) as ClubInput;
     try {
-      const r = await database().rpc('save_club', { p_id: id || null, p_payload: payload });
-      if (r.error) throw r.error;
-      if (!id) navigate(`/clb/${r.data as string}`);
+      const clubId = await saveClub(id, payload);
+      if (!id) navigate(`/clb/${clubId}`);
       else { setMessage('Đã lưu thông tin CLB.'); result.reload(); }
     } catch (err) { setError(readableError(err)); } finally { setBusy(false); }
   }
@@ -56,12 +42,7 @@ export function ClubDetailPage({ id }: { id?: string }) {
     event.preventDefault(); setBusy(true); setError(''); setMessage('');
     const file = new FormData(event.currentTarget).get('evidence') as File | null;
     try {
-      if (!file || !file.name.toLowerCase().endsWith('.pdf') || file.type !== 'application/pdf' || file.size > 10 * 1024 * 1024) throw new Error('Chỉ chấp nhận PDF có dung lượng tối đa 10 MB.');
-      const path = `${session!.user.id}/${id}/${crypto.randomUUID()}.pdf`;
-      const uploaded = await database().storage.from('club-evidence').upload(path, file, { contentType: 'application/pdf', upsert: false });
-      if (uploaded.error) throw uploaded.error;
-      const attached = await database().rpc('attach_club_document', { p_club: id, p_path: path, p_file_name: file.name });
-      if (attached.error) throw attached.error;
+      await uploadClubDocument(session!.user.id, id!, file);
       setMessage('Đã tải lên minh chứng. Tệp được lưu riêng tư.'); result.reload();
     } catch (err) { setError(readableError(err)); } finally { setBusy(false); }
   }
@@ -69,16 +50,14 @@ export function ClubDetailPage({ id }: { id?: string }) {
     setBusy(true); setError(''); setMessage('');
     try {
       if (!roundId) throw new Error('Vui lòng chọn đợt tiếp nhận.');
-      const r = await database().rpc('submit_club', { p_club: id, p_round: roundId });
-      if (r.error) throw r.error;
+      await submitClub(id!, roundId);
       setMessage('Đã nộp hồ sơ. Bạn có thể xem mã tiếp nhận và lịch sử bên dưới.'); result.reload();
     } catch (err) { setError(readableError(err)); } finally { setBusy(false); }
   }
   async function viewDocument(path: string) {
     try {
-      const r = await database().storage.from('club-evidence').createSignedUrl(path, 60);
-      if (r.error) throw r.error;
-      window.open(r.data.signedUrl, '_blank', 'noopener,noreferrer');
+      const url = await clubDocumentUrl(path);
+      window.open(url, '_blank', 'noopener,noreferrer');
     } catch (err) { setError(readableError(err)); }
   }
   return <PortalLayout title={id ? 'Hồ sơ câu lạc bộ' : 'Đăng ký câu lạc bộ'} subtitle="Tạo hồ sơ tổ chức chưa đồng nghĩa với việc được công nhận là thành viên Mạng lưới.">
@@ -97,11 +76,6 @@ export function ClubDetailPage({ id }: { id?: string }) {
 
 export function ApplicationHistory({ application }: { application: Application }) {
   const [expanded, setExpanded] = useState(false);
-  const result = useAsyncData(async () => {
-    const [events, versions] = await Promise.all([database().from('application_events').select('*').eq('application_id', application.id).order('created_at'), database().from('application_versions').select('*').eq('application_id', application.id).order('version')]);
-    if (events.error) throw events.error;
-    if (versions.error) throw versions.error;
-    return { events: events.data as ApplicationEvent[], versions: versions.data as ApplicationVersion[] };
-  }, `${application.id}:${application.status}:${application.version}`);
+  const result = useAsyncData(() => loadApplicationHistory(application.id), `${application.id}:${application.status}:${application.version}`);
   return <section className="p-card"><div className="section-toolbar"><div><h2>Hồ sơ {application.code}</h2><p>Nộp lúc {dateLabel(application.submitted_at)} · Phiên bản {application.version}</p></div><StatusBadge status={application.status} /></div>{result.error && <Notice tone="error">{result.error}</Notice>}<ol className="history-list">{result.data?.events.map((event) => <li key={event.id}><span>{statusLabels[event.status] || event.status}</span><p>{event.note}</p>{event.deadline && <strong>Hạn bổ sung: {dateLabel(event.deadline)}</strong>}<small>{dateLabel(event.created_at)}</small></li>)}</ol><button className="text-button" onClick={() => setExpanded(!expanded)} aria-expanded={expanded}>{expanded ? 'Ẩn phiên bản đã nộp' : 'Xem các phiên bản đã nộp'}</button>{expanded && <div className="version-list">{result.data?.versions.map((version) => <details key={version.id}><summary>Phiên bản {version.version} · {dateLabel(version.created_at)}</summary><dl><dt>Tên CLB</dt><dd>{version.snapshot.club.name}</dd><dt>Đơn vị chủ quản</dt><dd>{version.snapshot.club.university}</dd><dt>Lĩnh vực</dt><dd>{version.snapshot.club.field}</dd><dt>Giới thiệu</dt><dd>{version.snapshot.club.description}</dd><dt>Tệp tại thời điểm nộp</dt><dd>{version.snapshot.documents.map((d) => d.file_name).join(', ')}</dd></dl></details>)}</div>}</section>;
 }

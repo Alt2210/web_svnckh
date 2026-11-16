@@ -3,9 +3,10 @@ import { ArrowUpRight, CalendarDays, MapPin, Users, ArrowLeft } from 'lucide-rea
 import { useAuth } from '../contexts/AuthContext';
 import { EmptyState, Notice, PortalLayout } from '../components/PortalLayout';
 import { useAsyncData } from '../hooks/useAsyncData';
-import { database, readableError } from '../lib/supabase';
-import { eligibleClubs, eventRpc, loadEvent, registrationOpen } from '../lib/events';
-import { dateLabel, eventLabels, type EventFeedback, type EventRegistration, type NetworkEvent } from '../types/domain';
+import { readableError } from '../lib/errors';
+import { listEvents, loadEventDetails, listMyEventRegistrations, eventRpc, type EventOperation } from '../services/events.service';
+import { registrationOpen } from '../lib/events';
+import { dateLabel, eventLabels, type NetworkEvent } from '../types/domain';
 import { EventCover } from '../components/EventCover';
 
 export function EventShell({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
@@ -26,10 +27,7 @@ export default function EventsPage() {
   const [search, setSearch] = useState('');
   const [period, setPeriod] = useState('all');
   const [category, setCategory] = useState('all');
-  const query = useAsyncData(async () => {
-    const { data, error } = await database().from('events').select('*').in('status', ['published', 'completed', 'cancelled']).order('starts_at').limit(200);
-    if (error) throw error; return (data || []) as NetworkEvent[];
-  }, `events:${auth.session?.user.id || ''}:${auth.aal2}`);
+  const query = useAsyncData(listEvents, `events:${auth.session?.user.id || ''}:${auth.aal2}`);
   const events = query.data?.filter((e) => `${e.title} ${e.category} ${e.location}`.toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi')) && (category === 'all' || e.category === category) && (period === 'all' || (period === 'upcoming' ? new Date(e.ends_at).getTime() > Date.now() && e.status !== 'cancelled' : new Date(e.ends_at).getTime() <= Date.now() || e.status === 'cancelled')));
   const filtered = Boolean(search || category !== 'all' || period !== 'all');
   return <EventShell title="Hoạt động & sự kiện" subtitle="Khám phá những cuộc gặp gỡ, ý tưởng và cơ hội dành cho cộng đồng nghiên cứu trẻ."><div className="events-list-heading"><div><span className="portal-eyebrow">LỊCH HOẠT ĐỘNG</span><h2>Tìm một kết nối mới.</h2><p>Tự do khám phá chương trình. Đăng nhập khi bạn muốn đăng ký tham gia.</p></div>{auth.session && <a className="p-btn secondary" href="#/dang-ky-hoat-dong">Đăng ký của tôi <ArrowUpRight size={16} /></a>}</div><div className="table-toolbar event-filters"><label className="p-label">Tìm hoạt động<input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Tên, chủ đề hoặc địa điểm…" type="search" /></label><label className="p-label">Loại chương trình<select value={category} onChange={(e) => setCategory(e.target.value)}><option value="all">Tất cả chương trình</option>{[...new Set(query.data?.map((e) => e.category))].sort().map((value) => <option key={value}>{value}</option>)}</select></label><label className="p-label">Thời gian<select value={period} onChange={(e) => setPeriod(e.target.value)}><option value="all">Tất cả thời gian</option><option value="upcoming">Sắp diễn ra</option><option value="past">Đã kết thúc / đã hủy</option></select></label><button className="p-btn secondary" onClick={query.reload} disabled={query.loading}>Làm mới</button></div>{query.error && <Notice tone="error">{query.error}</Notice>}{query.loading ? <Notice>Đang tải hoạt động…</Notice> : <>{!query.error && <p className="events-result-count" aria-live="polite">{events?.length || 0} hoạt động{filtered ? ' phù hợp' : ' đã công bố'}</p>}{events?.length ? <div className="events-grid">{events.map((event) => <EventCard key={event.id} event={event} />)}</div> : !query.error && <EmptyState title={filtered ? 'Chưa tìm thấy hoạt động phù hợp' : 'Những cuộc hẹn mới đang được chuẩn bị'} description={filtered ? 'Thử một từ khóa khác hoặc xóa bộ lọc để xem thêm chương trình.' : 'Các chương trình sẽ xuất hiện tại đây ngay khi ban tổ chức công bố. Hẹn bạn quay lại để khám phá và kết nối.'} action={filtered ? <button className="p-btn secondary" onClick={() => { setSearch(''); setPeriod('all'); setCategory('all'); }}>Xóa bộ lọc</button> : <a className="p-btn secondary" href="#/">Trở về trang chủ <ArrowUpRight size={16} /></a>} />}</>}</EventShell>;
@@ -38,19 +36,8 @@ export default function EventsPage() {
 export function EventDetailPage({ id }: { id: string }) {
   const auth = useAuth();
   const [busy, setBusy] = useState(false), [error, setError] = useState(''), [message, setMessage] = useState(''), [confirmCancel, setConfirmCancel] = useState(false);
-  const query = useAsyncData(async () => {
-    const event = await loadEvent(id);
-    if (!auth.session) return { event, registration: null, access: '', feedback: null, manager: false };
-    const [registration, access, feedback, clubs] = await Promise.all([
-      database().from('event_registrations').select('*').eq('event_id', id).eq('user_id', auth.session.user.id).maybeSingle(),
-      database().from('event_access').select('meeting_url').eq('event_id', id).maybeSingle(),
-      database().from('event_feedback').select('rating,comment').eq('event_id', id).eq('user_id', auth.session.user.id).maybeSingle(),
-      eligibleClubs(auth.session.user.id),
-    ]);
-    for (const result of [registration, access, feedback]) if (result.error) throw result.error;
-    return { event, registration: registration.data as EventRegistration | null, access: String(access.data?.meeting_url || ''), feedback: feedback.data as EventFeedback | null, manager: (auth.roles.includes('admin') && auth.aal2) || clubs.some((club) => club.id === event.organizer_club_id) };
-  }, `${id}:${auth.session?.user.id}:${auth.aal2}`);
-  async function act(name: string, args: Record<string, unknown>, success: string) {
+  const query = useAsyncData(() => loadEventDetails(id, auth.session?.user.id, auth.roles.includes('admin') && auth.aal2), `${id}:${auth.session?.user.id}:${auth.aal2}`);
+  async function act(name: EventOperation, args: Record<string, unknown>, success: string) {
     setBusy(true); setError(''); setMessage('');
     try { const result = await eventRpc(name, args); setMessage(result === 'waitlisted' ? 'Bạn đã vào danh sách chờ. Khi có chỗ trống, hệ thống sẽ chuyển lượt theo thứ tự đăng ký.' : success); setConfirmCancel(false); query.reload(); }
     catch (err) { setError(readableError(err)); } finally { setBusy(false); }
@@ -66,14 +53,6 @@ export function EventDetailPage({ id }: { id: string }) {
 
 export function MyEventRegistrationsPage() {
   const auth = useAuth();
-  const query = useAsyncData(async () => {
-    const { data, error } = await database().from('event_registrations').select('*').eq('user_id', auth.session!.user.id).order('updated_at', { ascending: false });
-    if (error) throw error;
-    const registrations = (data || []) as EventRegistration[];
-    if (!registrations.length) return [];
-    const result = await database().from('events').select('*').in('id', registrations.map((r) => r.event_id));
-    if (result.error) throw result.error;
-    return registrations.map((registration) => ({ registration, event: (result.data as NetworkEvent[]).find((e) => e.id === registration.event_id) }));
-  }, auth.session!.user.id);
+  const query = useAsyncData(() => listMyEventRegistrations(auth.session!.user.id), auth.session!.user.id);
   return <PortalLayout title="Đăng ký hoạt động của tôi" subtitle="Theo dõi chỗ đã xác nhận, danh sách chờ và các chương trình bạn đã tham dự."><div className="page-actions"><a className="p-btn" href="#/hoat-dong">Khám phá hoạt động</a><button className="p-btn secondary" disabled={query.loading} onClick={query.reload}>Cập nhật trạng thái</button></div>{query.error && <Notice tone="error">{query.error}</Notice>}{query.loading && <Notice>Đang tải đăng ký…</Notice>}{query.data?.length ? <div className="events-grid">{query.data.map(({ event, registration }) => event ? <EventCard key={registration.id} event={event}><EventTag value={registration.status} /></EventCard> : <article className="p-card" key={registration.id}><p>Hoạt động hiện không thể hiển thị.</p><EventTag value={registration.status} /></article>)}</div> : !query.loading && !query.error && <EmptyState title="Bạn chưa đăng ký hoạt động nào" description="Tìm một chủ đề quan tâm và bắt đầu kết nối với cộng đồng." />}</PortalLayout>;
 }

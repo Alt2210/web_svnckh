@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { readableError } from '../lib/supabase';
+import { readableError } from '../lib/errors';
 
 export function useAsyncData<T>(load: () => Promise<T>, key: string) {
   const loader = useRef(load); loader.current = load;

@@ -1,7 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { ArrowLeft, ArrowUpRight, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { database, callbackUrl, isConfigured, readableError } from '../lib/supabase';
+import { isConfigured, signUp, signIn, requestPasswordReset, updatePassword, signOutSession } from '../services/auth.service';
+import { readableError } from '../lib/errors';
 import { navigate } from '../lib/navigation';
 import { Notice } from '../components/PortalLayout';
 
@@ -31,26 +32,21 @@ export default function AuthPage({ mode }: { mode: Mode }) {
     const data = new FormData(event.currentTarget);
     const password = String(data.get('password') || '');
     try {
-      const client = database();
       if (mode === 'register') {
         if (password !== data.get('confirm')) throw new Error('Hai mật khẩu chưa trùng nhau.');
-        const result = await client.auth.signUp({ email: email.trim(), password, options: { data: { full_name: String(data.get('full_name')).trim() }, emailRedirectTo: callbackUrl() } });
-        if (result.error) throw result.error;
+        await signUp(email.trim(), password, String(data.get('full_name')).trim());
         setMessage('Vui lòng kiểm tra email và mở liên kết xác minh để hoàn tất đăng ký. Nếu đã có tài khoản, bạn có thể đăng nhập hoặc đặt lại mật khẩu.');
       } else if (mode === 'forgot') {
-        const result = await client.auth.resetPasswordForEmail(email.trim(), { redirectTo: callbackUrl() });
-        if (result.error) throw result.error;
+        await requestPasswordReset(email.trim());
         setMessage('Nếu email đủ điều kiện, bạn sẽ nhận được liên kết đặt lại mật khẩu. Vui lòng kiểm tra cả thư mục thư rác.');
       } else if (mode === 'reset') {
         if (!auth.session) throw new Error('Vui lòng mở liên kết khôi phục còn hiệu lực từ email.');
         if (password !== data.get('confirm')) throw new Error('Hai mật khẩu chưa trùng nhau.');
-        const result = await client.auth.updateUser({ password });
-        if (result.error) throw result.error;
-        await client.auth.signOut({ scope: 'global' });
+        await updatePassword(password);
+        await signOutSession(true);
         setMessage('Đã cập nhật mật khẩu và đăng xuất các phiên. Bạn có thể đăng nhập lại.');
       } else {
-        const result = await client.auth.signInWithPassword({ email: email.trim(), password });
-        if (result.error) throw result.error;
+        await signIn(email.trim(), password);
       }
     } catch (err) { setError(readableError(err)); } finally { setBusy(false); }
   }
