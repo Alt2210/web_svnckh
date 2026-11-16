@@ -26,7 +26,7 @@ Trong Authentication:
 - Thiết lập mật khẩu tối thiểu 10 ký tự và chính sách mật khẩu phù hợp.
 - Bật TOTP MFA. Mọi vai trò quản trị/thẩm định/phê duyệt đều cần phiên `aal2`.
 - Cấu hình Site URL là URL triển khai thực tế.
-- Thêm các Redirect URL được dùng: `http://127.0.0.1:5173/`, `http://localhost:5173/`, và khi triển khai lại Pages: `https://alt2210.github.io/web_svnckh/`.
+- Thêm các Redirect URL được dùng: `http://127.0.0.1:5173/`, `http://localhost:5173/`, `https://svnckh.tainangviet.vn/` và URL demo cũ `https://alt2210.github.io/web_svnckh/`.
 - Ứng dụng sử dụng PKCE và callback ở trang gốc. Liên kết xác minh/khôi phục cần mở trên trình duyệt đã bắt đầu luồng. Sự kiện `PASSWORD_RECOVERY` đưa người dùng đến trang đặt mật khẩu.
 - Cấu hình SMTP gửi email thực tế, giới hạn tần suất và chống thử sai trong Supabase trước khi mở cổng cho người dùng thật.
 
@@ -89,3 +89,7 @@ Mã React ở `frontend/`, migration và kiểm thử database ở `backend/`. C
 ## Tạm bỏ MFA cho admin
 
 Migration `backend/supabase/migrations/202611160004_admin_password_only.sql` cho phép vai trò admin dùng phiên mật khẩu (`aal1`). Admin không còn màn nhập mã TOTP trong giao diện hiện hành. Vẫn kiểm tra vai trò thực tế, email đã xác minh, tài khoản active và cấm tự duyệt hồ sơ. Reviewer/approver riêng vẫn cần MFA. Không xóa factor đã liên kết; muốn bật lại yêu cầu MFA cho admin, tạo migration khôi phục điều kiện aal2 và bổ sung lại giao diện xác thực. Không chạy lại migration 004 đã áp dụng.
+
+## Custom domain
+
+Subdomain chính: `https://svnckh.tainangviet.vn/`, CNAME tới `alt2210.github.io`. GitHub Pages vẫn là hosting frontend; Supabase vẫn là backend. Bản build dùng base `/` để assets và callback không còn chứa `/web_svnckh/`. Người dùng đã xác nhận cập nhật Site URL và thêm Redirect URL có dấu `/` cuối trong Supabase, giữ các URL cũ. Không đổi API key hoặc chạy lại migration khi gắn domain.

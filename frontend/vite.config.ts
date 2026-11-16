@@ -18,7 +18,9 @@ export default defineConfig(({ mode }) => {
   root: frontendRoot,
   envDir: repositoryRoot,
   plugins: [react()],
-  base: mode === 'pages' ? '/web_svnckh/' : '/',
+  // The custom domain serves this application at its root, including assets
+  // and Supabase email callbacks. Can be overridden for subdirectory hosting.
+  base: env.VITE_BASE_PATH || '/',
   build: {
     outDir: mode === 'pages' ? 'dist-pages' : 'dist',
     emptyOutDir: true,

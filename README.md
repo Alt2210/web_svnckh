@@ -4,7 +4,7 @@ Bản rút gọn tập trung hồ sơ CLB ở một trang riêng `/#/clb` và m�
 
 React + TypeScript nằm trong `frontend/`; backend Supabase (Auth, PostgreSQL RPC/RLS, Storage) nằm trong `backend/`. Dự án dùng npm workspaces với một lockfile tại `main`.
 
-Cấu trúc frontend/backend đã được tích hợp để triển khai từ `main`. Không cần chạy lại migration hoặc thay đổi project Supabase. Bản demo: https://alt2210.github.io/web_svnckh/.
+Cấu trúc frontend/backend đã được tích hợp để triển khai từ `main`. Không cần chạy lại migration hoặc thay đổi project Supabase. Bản demo: https://svnckh.tainangviet.vn/.
 
 ## Cấu trúc
 
@@ -55,7 +55,7 @@ npm.cmd run build:pages
 npm.cmd run preview
 ```
 
-Vite mặc định tại `http://127.0.0.1:5173/`. `build` xuất `frontend/dist/`; `build:pages` xuất `frontend/dist-pages/`, giữ base `/web_svnckh/` và các hash route hiện tại. Các lệnh trên không publish. Workflow Pages chỉ tự triển khai khi push lên `main`; nhánh refactor đã cập nhật đường dẫn artifact cho cấu trúc mới.
+Vite mặc định tại `http://127.0.0.1:5173/`. `build` xuất `frontend/dist/`; `build:pages` xuất `frontend/dist-pages/`, dùng base `/` cho custom domain và các hash route hiện tại. Các lệnh trên không publish. Workflow Pages chỉ tự triển khai khi push lên `main`; nhánh refactor đã cập nhật đường dẫn artifact cho cấu trúc mới.
 
 ## Phân chia trách nhiệm
 

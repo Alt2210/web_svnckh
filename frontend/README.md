@@ -11,4 +11,4 @@ React + TypeScript + Vite. Chạy lệnh từ thư mục `main`: `npm run dev`.
 
 Biến frontend vẫn lấy từ `.env.local` ở thư mục `main` để giữ cấu hình hiện tại. Chỉ biến `VITE_` được nhúng vào bundle. Không dùng secret/service-role key trong frontend. Các RPC và RLS ở `backend/supabase` mới quyết định quyền và điều kiện nghiệp vụ.
 
-Build thường xuất `frontend/dist/`; build Pages xuất `frontend/dist-pages/`, giữ base `/web_svnckh/` và các hash route cũ.
+Build thường xuất `frontend/dist/`; build Pages xuất `frontend/dist-pages/`, dùng base `/` cho custom domain và các hash route cũ.
