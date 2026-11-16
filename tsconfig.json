@@ -17,7 +17,6 @@
     "allowImportingTsExtensions": true
   },
   "include": [
-    "src",
-    "temp"
+    "src"
   ]
 }

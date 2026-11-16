@@ -1,24 +1,20 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
-import { fileURLToPath } from 'node:url';
 
-export default defineConfig(({ mode }) => mode === 'pages' ? {
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), 'VITE_');
+  const key = env.VITE_SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_ANON_KEY || '';
+  let role = '';
+  if (key.split('.').length === 3) {
+    try { role = JSON.parse(Buffer.from(key.split('.')[1], 'base64url').toString()).role || ''; } catch { /* Validated by Supabase if configured. */ }
+  }
+  if (key.startsWith('sb_secret_') || role === 'service_role') throw new Error('Never use a Supabase secret/service_role key in VITE_ variables. Use a publishable or anon key.');
+  return {
   plugins: [react()],
-  root: fileURLToPath(new URL('./temp', import.meta.url)),
-  publicDir: fileURLToPath(new URL('./public', import.meta.url)),
-  base: '/web_svnckh/',
+  base: mode === 'pages' ? '/web_svnckh/' : '/',
   build: {
-    outDir: fileURLToPath(new URL('./dist-pages', import.meta.url)),
+    outDir: mode === 'pages' ? 'dist-pages' : 'dist',
     emptyOutDir: true,
   },
-} : {
-  plugins: [react()],
-  build: {
-    rollupOptions: {
-      input: {
-        main: fileURLToPath(new URL('./index.html', import.meta.url)),
-        temp: fileURLToPath(new URL('./temp/index.html', import.meta.url)),
-      },
-    },
-  },
+  };
 });

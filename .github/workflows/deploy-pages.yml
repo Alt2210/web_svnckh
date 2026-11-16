@@ -1,4 +1,4 @@
-name: Deploy landing page to GitHub Pages
+name: Deploy application to GitHub Pages
 
 on:
   push:
@@ -27,8 +27,13 @@ jobs:
         run: npm ci
       - name: Configure Pages
         uses: actions/configure-pages@v5
-      - name: Build temp landing page
+      - name: Run tests
+        run: npm test
+      - name: Build application
         run: npm run build:pages
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
       - name: Upload site
         uses: actions/upload-pages-artifact@v4
         with:

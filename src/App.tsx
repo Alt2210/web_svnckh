@@ -1,5 +1,55 @@
-import { LandingPage } from './pages/LandingPage';
+import { lazy, Suspense } from 'react';
+import { useRoute } from './lib/navigation';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { useAuth } from './contexts/AuthContext';
+
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const AccountPage = lazy(() => import('./pages/AccountPage').then((m) => ({ default: m.AccountPage })));
+const ProfilePage = lazy(() => import('./pages/AccountPage').then((m) => ({ default: m.ProfilePage })));
+const SecurityPage = lazy(() => import('./pages/SecurityPage'));
+const ClubsPage = lazy(() => import('./pages/ClubsPage').then((m) => ({ default: m.ClubsPage })));
+const ClubDetailPage = lazy(() => import('./pages/ClubsPage').then((m) => ({ default: m.ClubDetailPage })));
+const UsersAdminPage = lazy(() => import('./pages/AdminPages').then((m) => ({ default: m.UsersAdminPage })));
+const ClubsAdminPage = lazy(() => import('./pages/AdminPages').then((m) => ({ default: m.ClubsAdminPage })));
+const RoundsAdminPage = lazy(() => import('./pages/AdminPages').then((m) => ({ default: m.RoundsAdminPage })));
+const ApplicationsAdminPage = lazy(() => import('./pages/AdminPages').then((m) => ({ default: m.ApplicationsAdminPage })));
+const AuditAdminPage = lazy(() => import('./pages/AdminPages').then((m) => ({ default: m.AuditAdminPage })));
+const EventsPage = lazy(() => import('./pages/EventsPage'));
+const EventDetailPage = lazy(() => import('./pages/EventsPage').then((m) => ({ default: m.EventDetailPage })));
+const MyEventRegistrationsPage = lazy(() => import('./pages/EventsPage').then((m) => ({ default: m.MyEventRegistrationsPage })));
+const EventManagementPage = lazy(() => import('./pages/EventManagementPage'));
+const EventEditorPage = lazy(() => import('./pages/EventManagementPage').then((m) => ({ default: m.EventEditorPage })));
+const EventAttendeesPage = lazy(() => import('./pages/EventManagementPage').then((m) => ({ default: m.EventAttendeesPage })));
 
 export default function App() {
-  return <LandingPage />;
+  const auth = useAuth();
+  const route = useRoute().split('?')[0];
+  let page;
+  if (route === '/') page = <LandingPage />;
+  else if (route === '/dang-nhap') page = <AuthPage key="login" mode="login" />;
+  else if (route === '/admin/dang-nhap') page = <AuthPage key="admin" mode="admin" />;
+  else if (route === '/dang-ky') page = <AuthPage key="register" mode="register" />;
+  else if (route === '/quen-mat-khau') page = <AuthPage key="forgot" mode="forgot" />;
+  else if (route === '/dat-lai-mat-khau') page = <AuthPage key="reset" mode="reset" />;
+  else if (route === '/tai-khoan') page = <ProtectedRoute><AccountPage /></ProtectedRoute>;
+  else if (route === '/ho-so') page = <ProtectedRoute><ProfilePage /></ProtectedRoute>;
+  else if (route === '/bao-mat') page = <ProtectedRoute><SecurityPage /></ProtectedRoute>;
+  else if (route === '/hoat-dong') page = <EventsPage />;
+  else if (/^\/hoat-dong\/[a-f0-9-]{36}$/.test(route)) page = <EventDetailPage key={route} id={route.split('/')[2]} />;
+  else if (route === '/dang-ky-hoat-dong') page = <ProtectedRoute><MyEventRegistrationsPage /></ProtectedRoute>;
+  else if (route === '/quan-ly-hoat-dong') page = <ProtectedRoute><EventManagementPage /></ProtectedRoute>;
+  else if (route === '/quan-ly-hoat-dong/tao') page = <ProtectedRoute><EventEditorPage key="new-event" /></ProtectedRoute>;
+  else if (/^\/quan-ly-hoat-dong\/[a-f0-9-]{36}\/sua$/.test(route)) page = <ProtectedRoute><EventEditorPage key={route} id={route.split('/')[2]} /></ProtectedRoute>;
+  else if (/^\/quan-ly-hoat-dong\/[a-f0-9-]{36}\/nguoi-tham-gia$/.test(route)) page = <ProtectedRoute><EventAttendeesPage key={route} id={route.split('/')[2]} /></ProtectedRoute>;
+  else if (route === '/clb') page = <ProtectedRoute><ClubsPage /></ProtectedRoute>;
+  else if (route === '/clb/tao') page = <ProtectedRoute><ClubDetailPage key="new" /></ProtectedRoute>;
+  else if (/^\/clb\/[a-f0-9-]{36}$/.test(route)) page = <ProtectedRoute><ClubDetailPage key={route} id={route.split('/')[2]} /></ProtectedRoute>;
+  else if (route === '/admin/nguoi-dung') page = <ProtectedRoute admin><UsersAdminPage /></ProtectedRoute>;
+  else if (route === '/admin/clb') page = <ProtectedRoute admin><ClubsAdminPage /></ProtectedRoute>;
+  else if (route === '/admin/dot-tuyen') page = <ProtectedRoute admin><RoundsAdminPage /></ProtectedRoute>;
+  else if (route === '/admin/ho-so') page = <ProtectedRoute staff><ApplicationsAdminPage /></ProtectedRoute>;
+  else if (route === '/admin/nhat-ky') page = <ProtectedRoute staff><AuditAdminPage /></ProtectedRoute>;
+  else page = <div className="auth-page"><main className="auth-card"><h1>Không tìm thấy trang</h1><a className="p-btn" href="#/">Quay về trang chủ</a></main></div>;
+  return <>{auth.callbackError && <aside className="auth-callback-notice" role="alert"><p>{auth.callbackError}</p><button onClick={auth.dismissCallbackError} aria-label="Đóng thông báo xác thực">×</button></aside>}<Suspense fallback={<div className="portal-loading" role="status">Đang tải trang…</div>}>{page}</Suspense></>;
 }
